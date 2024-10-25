@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="container p-3   text-center">
+    <h1>Bootstrap + Chart.js 頁面</h1>
+    <canvas id="myChart"></canvas>
+</div>
+
+@section chartjs_scripts{
+    <script>
+        const chartElement = document.getElementById('myChart');
+        new Chart(chartElement, {
+            type: 'bar',
+            data: {
+                labels: ['大一', '大二', '大三', '大四'],
+                datasets: [{
+                    label: '男生',
+                    data: [150, 130, 140, 266],
+                }, {
+                    label: '女生',
+                    data: [120, 160, 100, 123],
+                }],
+            }
+        });
+    </script>
+}
