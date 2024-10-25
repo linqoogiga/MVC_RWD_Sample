@@ -186,6 +186,7 @@
     <Content Include="Views\BootStrapDemo\Ch2_FlexBox.cshtml" />
     <Content Include="Views\Shared\_BootStrap_Layout.cshtml" />
     <Content Include="Views\JSChart\Index.cshtml" />
+    <Content Include="Views\JSChart\Pie_Chart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
