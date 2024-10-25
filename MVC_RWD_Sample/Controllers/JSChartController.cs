@@ -13,9 +13,18 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
-
         
         public ActionResult Pie_Chart()
+        {
+            return View();
+        }
+
+        public ActionResult Pie_Chart_2()
+        {
+            return View();
+        }
+
+        public ActionResult Line_Chart()
         {
             return View();
         }

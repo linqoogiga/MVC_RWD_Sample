@@ -1,0 +1,28 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="container p-3   text-center">
+    <h1>Line_Chart:折線圖</h1>
+    <canvas id="myChart"></canvas>
+</div>
+
+@section chartjs_scripts{
+    <script>
+        const chartElement = document.getElementById('myChart');
+        const data = {
+            labels: [
+                '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日',
+            ],
+            datasets: [{
+                label: '參加人數',
+                data: [160, 130, 140, 160, 170, 200, 180],
+            }]
+        };
+        new Chart(chartElement, {
+            type: 'line',
+            data: data,
+        });
+    </script>
+}

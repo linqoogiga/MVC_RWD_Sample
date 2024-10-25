@@ -187,6 +187,8 @@
     <Content Include="Views\Shared\_BootStrap_Layout.cshtml" />
     <Content Include="Views\JSChart\Index.cshtml" />
     <Content Include="Views\JSChart\Pie_Chart.cshtml" />
+    <Content Include="Views\JSChart\Line_Chart.cshtml" />
+    <Content Include="Views\JSChart\Pie_Chart_2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

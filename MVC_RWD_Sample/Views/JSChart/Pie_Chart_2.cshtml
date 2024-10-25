@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="row container-fluid">
+    <div class="col-sm-3 p-3 text-center">
+        <h1>Pie_Chart_2:圓餅圖_可指定背景色</h1>
+        <canvas id="myChart"></canvas>
+    </div>
+
+
+</div>
+
+
+
+@section chartjs_scripts{
+    <script>
+        const chartElement = document.getElementById('myChart');
+        //===
+        var myLineChart = new Chart(chartElement, {
+            type: 'pie',
+            data: {
+                labels: ["Spring", "Summer", "Fall", "Winter"],
+                datasets: [{
+                    data: [1200, 1700, 800, 200],
+                    backgroundColor: ["rgba(255, 128, 0, 0.5)", "rgba(100, 255, 0, 0.5)", "rgba(200, 50, 255, 0.5)", "rgba(0, 100, 255, 0.5)"]
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Weather'
+                }
+            }
+        });
+
+    </script>
+}
