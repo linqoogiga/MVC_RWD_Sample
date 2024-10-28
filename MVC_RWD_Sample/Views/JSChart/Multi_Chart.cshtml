@@ -5,6 +5,11 @@
 
 <div class="row container-fluid">
     <div class="col-sm-3 p-3 text-center">
+        <h1>Pie_Chart:圓餅圖</h1>
+        <canvas id="myChart_pie"></canvas>
+    </div>
+
+    <div class="col-sm-3 p-3 text-center">
         <h1>Bar_Chart:長條圖</h1>
         <canvas id="myChart_bar"></canvas>
     </div>
@@ -15,13 +20,13 @@
     </div>
 
     <div class="col-sm-3 p-3 text-center">
-        <h1>Pie_Chart:圓餅圖</h1>
-        <canvas id="myChart_pie"></canvas>
+        <h1>Line_Chart:折線圖</h1>
+        <canvas id="myChart_line"></canvas>
     </div>
 
     <div class="col-sm-3 p-3 text-center">
-        <h1>Line_Chart:折線圖</h1>
-        <canvas id="myChart_line"></canvas>
+        <h1>Radar_Chart:雷達圖</h1>
+        <canvas id="myChart_radar"></canvas>
     </div>
 </div>
 
@@ -29,35 +34,108 @@
 
 @section chartjs_scripts{
     <script>
-            const chartElement = document.getElementById('myChart');
-            const data = {
-                labels: [
-                    '女裝', '童裝', '男裝', '精選配件', '皮件', '傢飾寢具'
-                ],
-                datasets: [{
-                    label: '銷售商品',
-                    data: [44, 35, 31, 21, 2, 1],
-                }]
-            };
-            new Chart(chartElement, {
-                type: 'pie',
-                data: data,
-            });
+        const chartElement_pie = document.getElementById('myChart_pie');
+        const data_pie = {
+            labels: [
+                '女裝', '童裝', '男裝', '精選配件', '皮件', '傢飾寢具'
+            ],
+            datasets: [{
+                label: '銷售商品',
+                data: [44, 35, 31, 21, 2, 1],
+            }]
+        };
+        new Chart(chartElement_pie, {
+            type: 'pie',
+            data: data_pie,
+        });
 
-            //===
-            const chartElement2 = document.getElementById('myChart2');
-            const data2 = {
-                labels: [
-                    '女裝2', '童裝2', '男裝2', '精選配件2', '皮件2', '傢飾寢具2'
-                ],
+        //==============================
+        const chartElement_bar = document.getElementById('myChart_bar');
+        new Chart(chartElement_bar, {
+            type: 'bar',
+            data: {
+                labels: ['第一個', '第二個', '第三個'],
                 datasets: [{
-                    label: '銷售商品',
-                    data: [44, 35, 31, 21, 2, 1],
+                    label: '我是種類',
+                    data: [1, 10, 5],
                 }]
-            };
-            new Chart(chartElement2, {
-                type: 'pie',
-                data: data2,
-            });
+            }
+        });
+
+        //==============================
+        const chartElement_two_bar = document.getElementById('myChart_two_bar');
+        new Chart(chartElement_two_bar, {
+            type: 'bar',
+            data: {
+                labels: ['大一', '大二', '大三', '大四'],
+                datasets: [{
+                    label: '男生',
+                    data: [150, 130, 140, 266],
+                }, {
+                    label: '女生',
+                    data: [120, 160, 100, 123],
+                }],
+            },
+            options: {
+                categoryPercentage: 1, // 分類比例
+                barPercentage: 0.3 // 柱狀比例
+            }
+        });
+
+        //==============================
+        const chartElement_line = document.getElementById('myChart_line');
+        const data_line = {
+            labels: [
+                '星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日',
+            ],
+            datasets: [{
+                label: '參加人數',
+                data: [160, 130, 140, 160, 170, 200, 180],
+            }]
+        };
+        new Chart(chartElement_line, {
+            type: 'line',
+            data: data_line,
+        });
+
+        //==============================
+        const ctx = document.getElementById('myChart_radar');
+        const data_radar = {
+            labels: [
+                'Eating',
+                'Drinking',
+                'Sleeping',
+                'Designing',
+                'Coding',
+                'Cycling',
+                'Running'
+            ],
+            datasets: [{
+                label: '第一个数据集',
+                data: [65, 59, 90, 81, 56, 55, 40],
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
+            }, {
+                label: '第二个数据集',
+                data: [28, 48, 40, 19, 96, 27, 100],
+                fill: true,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                pointBackgroundColor: 'rgb(54, 162, 235)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(54, 162, 235)'
+            }]
+        };
+        const config = {
+            type: 'radar',
+            data: data_radar
+        };
+        new Chart(ctx, config);
     </script>
 }
