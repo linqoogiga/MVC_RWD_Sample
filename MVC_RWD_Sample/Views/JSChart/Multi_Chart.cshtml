@@ -1,0 +1,63 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="row container-fluid">
+    <div class="col-sm-3 p-3 text-center">
+        <h1>Bar_Chart:長條圖</h1>
+        <canvas id="myChart_bar"></canvas>
+    </div>
+
+    <div class="col-sm-3 p-3 text-center">
+        <h1>2Bar_Chart:長條圖2Bar</h1>
+        <canvas id="myChart_two_bar"></canvas>
+    </div>
+
+    <div class="col-sm-3 p-3 text-center">
+        <h1>Pie_Chart:圓餅圖</h1>
+        <canvas id="myChart_pie"></canvas>
+    </div>
+
+    <div class="col-sm-3 p-3 text-center">
+        <h1>Line_Chart:折線圖</h1>
+        <canvas id="myChart_line"></canvas>
+    </div>
+</div>
+
+
+
+@section chartjs_scripts{
+    <script>
+            const chartElement = document.getElementById('myChart');
+            const data = {
+                labels: [
+                    '女裝', '童裝', '男裝', '精選配件', '皮件', '傢飾寢具'
+                ],
+                datasets: [{
+                    label: '銷售商品',
+                    data: [44, 35, 31, 21, 2, 1],
+                }]
+            };
+            new Chart(chartElement, {
+                type: 'pie',
+                data: data,
+            });
+
+            //===
+            const chartElement2 = document.getElementById('myChart2');
+            const data2 = {
+                labels: [
+                    '女裝2', '童裝2', '男裝2', '精選配件2', '皮件2', '傢飾寢具2'
+                ],
+                datasets: [{
+                    label: '銷售商品',
+                    data: [44, 35, 31, 21, 2, 1],
+                }]
+            };
+            new Chart(chartElement2, {
+                type: 'pie',
+                data: data2,
+            });
+    </script>
+}

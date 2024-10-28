@@ -42,6 +42,16 @@ namespace MVC_RWD_Sample.Controllers
         public ActionResult Bar_Chart_Single()
         {
             return View();
-        }        
+        }
+
+        public ActionResult Multi_Chart()
+        {
+            return View();
+        }
+
+        public ActionResult Radar_Chart()
+        {
+            return View();
+        }
     }
 }
