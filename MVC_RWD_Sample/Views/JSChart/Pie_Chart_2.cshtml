@@ -23,14 +23,28 @@
             data: {
                 labels: ["Spring", "Summer", "Fall", "Winter"],
                 datasets: [{
+                    label: '銷售商品',
                     data: [1200, 1700, 800, 200],
                     backgroundColor: ["rgba(255, 128, 0, 0.5)", "rgba(100, 255, 0, 0.5)", "rgba(200, 50, 255, 0.5)", "rgba(0, 100, 255, 0.5)"]
                 }]
-            },
+            }
+            //,options: {
+            //    title: {
+            //        display: true,
+            //        text: 'Weather'
+            //    }
+            //}
+
+            ,
             options: {
-                title: {
-                    display: true,
-                    text: 'Weather'
+                plugins: {
+                    tooltip: { // hover
+                        callbacks: {
+                            label: function (context) {
+                                return  `${context.parsed}%`; // 想顯示的內容
+                            }
+                        }
+                    }
                 }
             }
         });
