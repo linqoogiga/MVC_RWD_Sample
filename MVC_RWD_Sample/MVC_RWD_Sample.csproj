@@ -190,6 +190,8 @@
     <Content Include="Views\JSChart\Line_Chart.cshtml" />
     <Content Include="Views\JSChart\Pie_Chart_2.cshtml" />
     <Content Include="Views\JSChart\Mix_Chart.cshtml" />
+    <Content Include="Views\JSChart\Bar_Chart_DataLabel.cshtml" />
+    <Content Include="Views\JSChart\Bar_Chart_Single.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

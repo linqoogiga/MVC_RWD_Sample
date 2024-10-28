@@ -33,5 +33,15 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Bar_Chart_DataLabel()
+        {
+            return View();
+        }
+
+        public ActionResult Bar_Chart_Single()
+        {
+            return View();
+        }        
     }
 }

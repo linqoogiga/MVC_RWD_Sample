@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="container p-3   text-center">
+    <h1>Bar_Chart_DataLabel:折線圖</h1>
+    <canvas id="myChart"></canvas>
+</div>
+
+@section chartjs_scripts{
+    <!-- 加入顯示資料的套件 -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+        const chartElement = document.getElementById('myChart');
+        new Chart(chartElement, {
+            type: 'bar',
+            plugins: [ChartDataLabels], // 加入套件
+            data: {
+                labels: ['第一個', '第二個', '第三個'],
+                datasets: [{
+                    label: '我是種類',
+                    data: [1, 10, 5],
+                    datalabels: {                        
+                        color: "red",  // 數值顏色
+                        anchor: "end", // 數值位置 center, start, end
+                        align: 'start', // 對齊位置 center, start, end
+                    },
+                }]
+            },
+        });
+    </script>
+}
