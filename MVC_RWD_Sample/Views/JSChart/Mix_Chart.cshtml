@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+
+<div class="row container-fluid">
+    <div class="col-md-5 p-3 text-center">
+        <h1>Mix_Chart:混合圖</h1>
+        <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+
+
+@section chartjs_scripts{
+    <script>
+        const chartElement = document.getElementById('myChart');
+
+        new Chart(chartElement, {
+            data: {
+                labels: ['國一', '國二', '國三'],
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: '成功人數',
+                        data: [8, 10, 5],
+                    }, {
+                        type: 'line',
+                        label: '報名人數',
+                        data: [12, 11, 8],
+                    }]
+            }
+        });
+    </script>
+}

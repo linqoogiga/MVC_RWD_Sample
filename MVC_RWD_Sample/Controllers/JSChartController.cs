@@ -28,5 +28,10 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Mix_Chart()
+        {
+            return View();
+        }
     }
 }
