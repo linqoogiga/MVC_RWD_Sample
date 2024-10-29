@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="~/Content/bootstrap.min.css" rel="stylesheet">
-    <script src="~/Scripts/bootstrap.bundle.js"></script>
+    @*<script src="~/Scripts/bootstrap.bundle.js"></script>*@
     <!-- 長條圖的原始程式碼, 可以移除掉長條圖就會消失 -->
     @*<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>*@
     <script src="~/Scripts/chart.js"></script>
     
 </head>
-<body>
+<body class="bg-secondary p-2" style="--bs-bg-opacity: .3;">
     @RenderBody()
     @RenderSection("chartjs_scripts", required: false)
 </body>
