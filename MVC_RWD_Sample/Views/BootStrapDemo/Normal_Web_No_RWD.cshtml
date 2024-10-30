@@ -18,7 +18,7 @@
     </div>
 
     <div>
-        <p>[p元素等同body的font-size:16px]:<br>32px測試css rem:<span style="color:red">1rem等於根元素的style的font-size。不是body style。</span></p>
+        <p>[p元素等同body的font-size:16px]:<br>32px測試css rem:<span style="color: red; font-weight: bold;">1rem等於根元素的style的font-size。不是body style。</span></p>
         <span style="font-size: 2rem;">
             32px=2rem=2 X 根元素的font-size=2 X [根元素:16px]。
             <br>
@@ -32,7 +32,7 @@
     </div>
 
     <hr>
-    <p>[p元素等同body的font-size:16px]:<br>32px測試css em:em等於父元素的style的font-size。<span style="color:red">最外層的em等於body的font-size。</span></p>
+    <p>[p元素等同body的font-size:16px]:<br>32px測試css em:em等於父元素的style的font-size。<span style="color: red; font-weight: bold;">最外層的em等於body的font-size。</span></p>
 
     <span style="font-size:32px;">
         32px //32px,
@@ -56,5 +56,17 @@
             </div>
         </div>
     </div>
+
+    <hr>    
+    <p>[p元素等同body的font-size:16px]:<br>32px測試css %:%等於父元素的style的font-size。<span style="color: red; font-weight: bold;">最外層的em等於body的font-size。</span></p>
+    <span style="font-size: 200%;">
+        32px //200%
+        <span style="font-size: 200%;">
+            32px //200%
+            <span style="font-size: 200%;">
+                32px //200%
+            </span>
+        </span>
+    </span>
 </body>
 </html>

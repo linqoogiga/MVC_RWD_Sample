@@ -22,6 +22,16 @@ namespace MVC_RWD_Sample.Controllers
         public ActionResult Ch2_FlexBox()
         {
             return View();
+        }
+
+        public ActionResult Ch4_Table()
+        {
+            return View();
+        }
+
+        public ActionResult Normal_Web_No_RWD()
+        {
+            return View();
         }        
     }
 }
