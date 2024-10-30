@@ -24,6 +24,11 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
+        public ActionResult Ch3_Text_H1_To_H5()
+        {
+            return View();
+        }        
+
         public ActionResult Ch4_Table()
         {
             return View();

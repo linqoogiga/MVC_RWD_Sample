@@ -7,9 +7,10 @@
 
 
 
-<div class="container mt-3">    
-    <p class="h2">.table 类为表格添加了基本样式（浅色内边距和水平分隔线）：</p>    
-    <table class="table">
+<div class="container mt-3">
+    <h1>带边框的表格</h1>
+    <p>.table-bordered 类在表格和单元格的所有边添加边框：</p>
+    <table class="table table-bordered  table-hover table-primary">
         <thead>
             <tr>
                 <th>Firstname</th>
@@ -36,3 +37,74 @@
         </tbody>
     </table>
 </div>
+
+<hr>
+
+
+
+
+    <div class="container mt-3">
+        <h1>上下文类</h1>
+        <p>上下文类可用于为表格、表格行或表格单元格着色。可以使用的类有：.table-primary、.table-success、.table-info、.table-warning、.table-danger、.table-active、.table-secondary、.table-light 和 .table-dark：</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Default</td>
+                    <td>Defaultson</td>
+                    <td>def@somemail.com</td>
+                </tr>
+                <tr class="table-primary">
+                    <td>Primary</td>
+                    <td class="table-success">John</td>
+                    <td>John@example.com</td>
+                </tr>
+                <tr class="table-success">
+                    <td>Success</td>
+                    <td>Gates</td>
+                    <td>bill@example.com</td>
+                </tr>
+                <tr class="table-danger">
+                    <td>Danger</td>
+                    <td>Jobs</td>
+                    <td>steve@example.com</td>
+                </tr>
+                <tr class="table-info">
+                    <td>Info</td>
+                    <td>Musk</td>
+                    <td>elon@example.com</td>
+                </tr>
+                <tr class="table-warning">
+                    <td>Warning</td>
+                    <td>Refs</td>
+                    <td>bo@example.com</td>
+                </tr>
+                <tr class="table-active">
+                    <td>Active</td>
+                    <td>Activeson</td>
+                    <td>act@example.com</td>
+                </tr>
+                <tr class="table-secondary">
+                    <td>Secondary</td>
+                    <td>Secondson</td>
+                    <td>sec@example.com</td>
+                </tr>
+                <tr class="table-light">
+                    <td>Light</td>
+                    <td>Angie</td>
+                    <td>angie@example.com</td>
+                </tr>
+                <tr class="table-dark">
+                    <td>Dark</td>
+                    <td>Bo</td>
+                    <td>bo@example.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
