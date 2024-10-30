@@ -8,6 +8,12 @@ namespace MVC_RWD_Sample.Controllers
 {
     public class BootStrapDemoController : Controller
     {
+        public ActionResult Normal_Web_No_RWD()
+        {
+            //測試無bootstrap RWD的CSS:
+            return View();
+        }
+
         // GET: BootStrapDemo
         public ActionResult Index()
         {
@@ -34,9 +40,9 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
-        public ActionResult Normal_Web_No_RWD()
+        public ActionResult Ch5_Image()
         {
             return View();
-        }        
+        }
     }
 }

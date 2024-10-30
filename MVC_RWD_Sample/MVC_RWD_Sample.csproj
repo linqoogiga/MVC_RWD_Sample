@@ -149,6 +149,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Image\flower-1.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -197,6 +198,7 @@
     <Content Include="Views\BootStrapDemo\Ch3_Text_H1_To_H5.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch4_Table.cshtml" />
     <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch5_Image.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
