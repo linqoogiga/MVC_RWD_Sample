@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "Normal_Web_No_RWD";
+    Layout = null;
+}
+<html>
+<body style="font-size: 16px;">
+    32px //body的font-size:16px
+    <style>
+        html {
+            /*根元素:預設font-size:是16px*/
+            color: orange;
+        }
+    </style>
+
+    <div style="font-size:32px;">
+        32px //此區div:font-size:32px
+    </div>
+
+    <div>
+        <p>[p元素等同body的font-size:16px]:<br>32px測試css rem:<span style="color:red">1rem等於根元素的style的font-size。不是body style。</span></p>
+        <span style="font-size: 2rem;">
+            32px=2rem=2 X 根元素的font-size=2 X [根元素:16px]。
+            <br>
+            <span style="font-size: 14px;">
+                //[此區span:font-size:14px] 32px
+                <span style="font-size: 2rem;">
+                    32px=2rem
+                </span>
+            </span>
+        </span>
+    </div>
+
+    <hr>
+    <p>[p元素等同body的font-size:16px]:<br>32px測試css em:em等於父元素的style的font-size。<span style="color:red">最外層的em等於body的font-size。</span></p>
+
+    <span style="font-size:32px;">
+        32px //32px,
+    </span>
+    <span style="font-size:64px;">
+        32px //64px,
+    </span>
+    <span style="font-size:128px;">
+        32px //128px
+    </span>
+
+
+    <div>
+        <div style="font-size: 2em;">
+            32px //32px
+            <div style="font-size: 2em;">
+                32px //64px。
+                <div style="font-size: 2em;">
+                    32px //128px。
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

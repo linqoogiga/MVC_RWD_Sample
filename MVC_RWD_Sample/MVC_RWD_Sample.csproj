@@ -195,11 +195,14 @@
     <Content Include="Views\JSChart\Multi_Chart.cshtml" />
     <Content Include="Views\JSChart\Radar_Chart.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch3_Text_H1_To_H5.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch4_Table.cshtml" />
+    <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Default\" />
+    <Folder Include="Views\Normal_No_RWD\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
