@@ -59,5 +59,20 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch9_Badge()
+        {
+            return View();
+        }
+
+        public ActionResult Ch10_Progress_Bar()
+        {
+            return View();
+        }
+
+        public ActionResult Ch11_Spinner()
+        {
+            return View();
+        }
     }
 }

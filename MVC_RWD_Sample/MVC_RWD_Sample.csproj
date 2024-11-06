@@ -124,6 +124,7 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JSChartController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -202,6 +203,10 @@
     <Content Include="Views\BootStrapDemo\Ch6_Jumbotron.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch7_Alert.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch8_Button.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch9_Badge.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch10_Progress_Bar.cshtml" />
+    <Content Include="Views\Test\CSS_Animation.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch11_Spinner.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
