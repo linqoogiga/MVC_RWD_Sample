@@ -54,5 +54,10 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch8_Button()
+        {
+            return View();
+        }
     }
 }

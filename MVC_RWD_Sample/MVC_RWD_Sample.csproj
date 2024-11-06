@@ -201,6 +201,7 @@
     <Content Include="Views\BootStrapDemo\Ch5_Image.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch6_Jumbotron.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch7_Alert.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch8_Button.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
