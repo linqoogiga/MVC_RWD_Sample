@@ -200,12 +200,12 @@
     <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch5_Image.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch6_Jumbotron.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch7_Alert.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
     <Folder Include="Views\Default\" />
-    <Folder Include="Views\Normal_No_RWD\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
