@@ -184,8 +184,8 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\BootStrapDemo\Index.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch1_Container.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch2_FlexBox.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch01_Container.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch02_FlexBox.cshtml" />
     <Content Include="Views\Shared\_BootStrap_Layout.cshtml" />
     <Content Include="Views\JSChart\Index.cshtml" />
     <Content Include="Views\JSChart\Pie_Chart.cshtml" />
@@ -196,17 +196,18 @@
     <Content Include="Views\JSChart\Bar_Chart_Single.cshtml" />
     <Content Include="Views\JSChart\Multi_Chart.cshtml" />
     <Content Include="Views\JSChart\Radar_Chart.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch3_Text_H1_To_H5.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch4_Table.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch03_Text_H1_To_H5.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch04_Table.cshtml" />
     <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch5_Image.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch6_Jumbotron.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch7_Alert.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch8_Button.cshtml" />
-    <Content Include="Views\BootStrapDemo\Ch9_Badge.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch05_Image.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch06_Jumbotron.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch07_Alert.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch08_Button.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch09_Badge.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch10_Progress_Bar.cshtml" />
     <Content Include="Views\Test\CSS_Animation.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch11_Spinner.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch12_Pagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

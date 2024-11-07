@@ -20,47 +20,47 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
-        public ActionResult Ch1_Container()
+        public ActionResult Ch01_Container()
         {
             return View();
         }
 
-        public ActionResult Ch2_FlexBox()
+        public ActionResult Ch02_FlexBox()
         {
             return View();
         }
 
-        public ActionResult Ch3_Text_H1_To_H5()
+        public ActionResult Ch03_Text_H1_To_H5()
         {
             return View();
         }        
 
-        public ActionResult Ch4_Table()
+        public ActionResult Ch04_Table()
         {
             return View();
         }
 
-        public ActionResult Ch5_Image()
+        public ActionResult Ch05_Image()
         {
             return View();
         }
 
-        public ActionResult Ch6_Jumbotron()
+        public ActionResult Ch06_Jumbotron()
         {
             return View();
         }
 
-        public ActionResult Ch7_Alert()
+        public ActionResult Ch07_Alert()
         {
             return View();
         }
 
-        public ActionResult Ch8_Button()
+        public ActionResult Ch08_Button()
         {
             return View();
         }
 
-        public ActionResult Ch9_Badge()
+        public ActionResult Ch09_Badge()
         {
             return View();
         }
@@ -71,6 +71,11 @@ namespace MVC_RWD_Sample.Controllers
         }
 
         public ActionResult Ch11_Spinner()
+        {
+            return View();
+        }
+
+        public ActionResult Ch12_Pagination()
         {
             return View();
         }
