@@ -79,5 +79,10 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch13_List_Group()
+        {
+            return View();
+        }
     }
 }

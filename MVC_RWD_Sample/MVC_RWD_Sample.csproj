@@ -208,6 +208,7 @@
     <Content Include="Views\Test\CSS_Animation.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch11_Spinner.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch12_Pagination.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch13_List_Group.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
