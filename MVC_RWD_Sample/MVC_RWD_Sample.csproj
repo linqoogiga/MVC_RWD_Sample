@@ -150,6 +150,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Image\avatar.png" />
     <Content Include="Image\flower-1.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -209,6 +210,8 @@
     <Content Include="Views\BootStrapDemo\Ch11_Spinner.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch12_Pagination.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch13_List_Group.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch14_Card.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch15_DropDownList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

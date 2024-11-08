@@ -84,5 +84,15 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch14_Card()
+        {
+            return View();
+        }
+
+        public ActionResult Ch15_DropDownList()
+        {
+            return View();
+        }
     }
 }
