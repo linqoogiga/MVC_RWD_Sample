@@ -213,6 +213,7 @@
     <Content Include="Views\BootStrapDemo\Ch14_Card.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch15_DropDownList.cshtml" />
     <Content Include="Views\BootStrapDemo\All_Dom.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch16_Collapse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
