@@ -14,6 +14,11 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
+        public ActionResult All_Dom()
+        {
+            return View();
+        }
+
         // GET: BootStrapDemo
         public ActionResult Index()
         {
