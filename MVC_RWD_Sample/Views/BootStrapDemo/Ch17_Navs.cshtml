@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "Ch17_Navs";
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+<div class="container-fluid  text-center">
+    <p class="h2">Ch17_Navs</p>
+</div>
+
+<ul class="nav justify-content-center">
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">禁用</a>
+    </li>
+</ul>
+<hr>
+
+<ul class="nav nav-tabs  justify-content-center nav-justified">
+    <li class="nav-item">
+        <a class="nav-link " href="#">活动</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">禁用</a>
+    </li>
+</ul>
+<hr>
+
+<ul class="nav nav-tabs  nav-pills justify-content-center nav-justified">
+    <li class="nav-item">
+        <a class="nav-link " href="#">活动</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">禁用</a>
+    </li>
+</ul>
+<hr>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" href="#">活动</a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Dropdown</a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">链接 1</a></li>
+            <li><a class="dropdown-item" href="#">链接 2</a></li>
+            <li><a class="dropdown-item" href="#">链接 3</a></li>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">禁用</a>
+    </li>
+</ul>
+<hr>
+
+<ul class="nav  nav-pills ">
+    <li class="nav-item">
+        <a class="nav-link active" href="#">活动</a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">Dropdown</a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">链接 1</a></li>
+            <li><a class="dropdown-item" href="#">链接 2</a></li>
+            <li><a class="dropdown-item" href="#">链接 3</a></li>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#">链接</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#">禁用</a>
+    </li>
+</ul>
+<hr>
+
+<div>    
+    <div class="container-fluid  text-center">
+        <p class="h2">Ch17_可切换的/动态选项卡</p>
+    </div>
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs nav-pills justify-content-center nav-justified" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#home">春日</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#menu1">初夏</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#menu2">山行</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div id="home" class="container tab-pane active">
+            <br>
+            <h3>春日</h3>
+            <p>胜日寻芳泗水滨，无边光景一时新。</p>
+            <p>等闲识得东风面，万紫千红总是春。</p>
+        </div>
+        <div id="menu1" class="container tab-pane fade">
+            <br>
+            <h3>初夏绝句</h3>
+            <p>纷纷红紫已成尘，布谷声中夏令新。</p>
+            <p>夹路桑麻行不尽，始知身是太平人。</p>
+        </div>
+        <div id="menu2" class="container tab-pane fade">
+            <br>
+            <h3>山行</h3>
+            <p>远上寒山石径斜，白云生处有人家。</p>
+            <p>停车坐爱枫林晚，霜叶红于二月花。</p>
+        </div>
+    </div>
+</div>
+<hr>

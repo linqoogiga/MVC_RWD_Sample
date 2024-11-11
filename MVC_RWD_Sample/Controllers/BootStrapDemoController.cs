@@ -104,5 +104,10 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch17_Navs()
+        {
+            return View();
+        }
     }
 }
