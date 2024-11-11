@@ -109,5 +109,10 @@ namespace MVC_RWD_Sample.Controllers
         {
             return View();
         }
+
+        public ActionResult Ch18_NavBar()
+        {
+            return View();
+        }
     }
 }
