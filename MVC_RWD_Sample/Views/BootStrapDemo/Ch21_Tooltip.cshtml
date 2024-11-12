@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Ch21_Tooltip";
+    Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
+}
+
+<div class="container-fluid  text-center">
+    <p class="h2">Ch21_Tooltip</p>
+</div>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="tooltip" title="太棒了！">请悬停在我上面！</button>
+
+
+
+
+    <div class="container mt-3">
+        <h3>工具提示定位</h3>
+        <p>data-bs-placement 属性指定工具提示的位置。</p>
+        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="太棒了！">Top</a>
+        <a href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="太棒了！">Bottom</a>
+        <a href="#" data-bs-toggle="tooltip" data-bs-placement="left" title="太棒了！">Left</a>
+        <a href="#" data-bs-toggle="tooltip" data-bs-placement="right" title="太棒了！">Right</a>
+    </div>
+
+    <script>
+        //注释：工具提示必须用 JavaScript 初始化才能工作。
+        //以下代码将启用文档中的所有工具提示：
+        //===
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>

@@ -4,6 +4,18 @@
     Layout = "~/Views/Shared/_BootStrap_Layout.cshtml";
 }
 
+<style>
+    .btn_ok {
+        background-color: orange;
+        border-width: 0px;
+    }
+
+        .btn_ok:hover {
+            background-color: darkorange;
+        }
+    
+</style>
+
 <div class="container-fluid  text-center">
     <p class="h2">All_Dom</p>
 </div>
@@ -86,8 +98,14 @@
     </div>
 </div>
 
-    <div class="row">
-        <div class="col p-3">
-            <button type="button" class="btn btn-primary col-12">確定</button>
-        </div>
+<div class="row">
+    <div class="col-sm-4 "><img src="~/Image/beijing.jpg" class="img-fluid " alt="Park" ></div>
+    <div class="col-sm-4 "><img src="~/Image/wuhan.jpg" class="img-fluid rounded " alt="Park" ></div>
+    <div class="col-sm-4 "><img src="~/Image/shanghai.jpg" class="img-fluid " alt="Park" ></div>
+</div>
+
+<div class="row">
+    <div class="col p-3">
+        <button type="button" class="btn  col-12 btn_ok" >確定</button>
     </div>
+</div>

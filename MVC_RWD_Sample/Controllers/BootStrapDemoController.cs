@@ -129,6 +129,11 @@ namespace MVC_RWD_Sample.Controllers
         public ActionResult Ch20_Modal()
         {
             return View();
-        }        
+        }
+
+        public ActionResult Ch21_Tooltip()
+        {
+            return View();
+        }
     }
 }
