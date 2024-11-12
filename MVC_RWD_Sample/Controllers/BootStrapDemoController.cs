@@ -20,6 +20,12 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
+        public ActionResult Normal_Web_No_RWD_Pseudo_Element()
+        {
+            //測試無bootstrap RWD的偽元素:
+            return View();
+        }
+
         public ActionResult All_Dom()
         {
             return View();

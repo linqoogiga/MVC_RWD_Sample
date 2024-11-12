@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Normal_Web_No_RWD_偽元素";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Normal_Web_No_RWD_Flex</title>
+    <style>
+        .box {
+            width: 100px;
+            height: 100px;
+            background: #AAAAAA;
+        }
+
+            .box::before {
+                position: absolute; /*絕對定位*/
+                content: ""; /*沒有加這段就不會產生偽元素*/
+                width: 100px;
+                height: 100px;
+                background: orange;
+                top: 8px;
+                left: 150px;                
+            }
+
+            .box::after {
+                position: absolute; /*絕對定位*/
+                content: ""; /*沒有加這段就不會產生偽元素*/
+                width: 100px;
+                height: 100px;
+                background: pink;
+                top: 8px;
+                left: 300px;
+            }
+    </style>
+</head>
+<body>
+    <div class="box"></div>
+</body>
+</html>
