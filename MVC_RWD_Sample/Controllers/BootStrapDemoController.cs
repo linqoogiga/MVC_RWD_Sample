@@ -14,6 +14,12 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
+        public ActionResult Normal_Web_No_RWD_Flex()
+        {
+            //測試無bootstrap RWD的CSS->Flex:
+            return View();
+        }
+
         public ActionResult All_Dom()
         {
             return View();
@@ -111,6 +117,11 @@ namespace MVC_RWD_Sample.Controllers
         }
 
         public ActionResult Ch18_NavBar()
+        {
+            return View();
+        }
+
+        public ActionResult Ch19_Carousel()
         {
             return View();
         }

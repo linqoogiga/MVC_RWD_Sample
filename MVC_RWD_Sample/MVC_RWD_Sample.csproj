@@ -151,7 +151,10 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Image\avatar.png" />
+    <Content Include="Image\beijing.jpg" />
     <Content Include="Image\flower-1.jpg" />
+    <Content Include="Image\shanghai.jpg" />
+    <Content Include="Image\wuhan.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -216,6 +219,8 @@
     <Content Include="Views\BootStrapDemo\Ch16_Collapse.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch17_Navs.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch18_NavBar.cshtml" />
+    <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD_Flex.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch19_Carousel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
