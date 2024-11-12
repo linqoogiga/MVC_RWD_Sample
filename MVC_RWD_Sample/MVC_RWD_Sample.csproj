@@ -221,6 +221,7 @@
     <Content Include="Views\BootStrapDemo\Ch18_NavBar.cshtml" />
     <Content Include="Views\BootStrapDemo\Normal_Web_No_RWD_Flex.cshtml" />
     <Content Include="Views\BootStrapDemo\Ch19_Carousel.cshtml" />
+    <Content Include="Views\BootStrapDemo\Ch20_Modal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
