@@ -19,6 +19,12 @@ namespace MVC_RWD_Sample.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 支援跨日計算的請假總時數入口
+        /// [1]同一天    -> 直接呼叫 Get_OneDay_TotalHours_For_Unit_Hour
+        /// [2]共2天     -> 第1天:p_From_DT~18:00，第2天:09:00~p_To_DT
+        /// [3]共3天以上 -> 第1天:p_From_DT~18:00，中間每天固定8小時，最後一天:09:00~p_To_DT
+        /// </summary>
         public double Get_TotalHours_Without_Holiday_For_Unit_Hour(string country, string fromDate, string toDate, string fromTime, string toTime)
         {
             DateTime tmp_From_DT = new DateTime();
@@ -31,8 +37,36 @@ namespace MVC_RWD_Sample.Controllers
             //===============
             if (is_Valid_DateTime_From && is_Valid_DateTime_To)
             {
-                double tmp_TotalHours = Get_OneDay_TotalHours_For_Unit_Hour(tmp_From_DT, tmp_To_DT);
-                return tmp_TotalHours;
+                double tmp_TotalHours = 0;
+                //===============
+                // 同一天，直接用原本的單日計算方式
+                if (tmp_From_DT.Date == tmp_To_DT.Date)
+                {
+                    tmp_TotalHours = Get_OneDay_TotalHours_For_Unit_Hour(tmp_From_DT, tmp_To_DT);
+                    return tmp_TotalHours;
+                }
+                //===============
+                // 計算共跨幾天 (含頭尾)
+                int tmp_TotalDays = (tmp_To_DT.Date - tmp_From_DT.Date).Days + 1;
+                //===============
+                // 第1天: p_From_DT ~ 當天18:00
+                DateTime tmp_Day1_End_DT = tmp_From_DT.Date.AddHours(18);
+                double tmp_Day1_Hours = Get_OneDay_TotalHours_For_Unit_Hour(tmp_From_DT, tmp_Day1_End_DT);
+                //===============
+                // 最後1天: 當天09:00 ~ p_To_DT
+                DateTime tmp_LastDay_Start_DT = tmp_To_DT.Date.AddHours(9);
+                double tmp_LastDay_Hours = Get_OneDay_TotalHours_For_Unit_Hour(tmp_LastDay_Start_DT, tmp_To_DT);
+                //===============
+                tmp_TotalHours = tmp_Day1_Hours + tmp_LastDay_Hours;
+                //===============
+                // 共3天以上，中間每一天固定8小時
+                if (tmp_TotalDays >= 3)
+                {
+                    int tmp_MiddleDays = tmp_TotalDays - 2;
+                    tmp_TotalHours += tmp_MiddleDays * 8;
+                }
+                //===============
+                return tmp_TotalHours;                
             }
             else
             {
