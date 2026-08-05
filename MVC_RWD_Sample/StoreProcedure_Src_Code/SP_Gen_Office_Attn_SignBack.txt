@@ -276,24 +276,15 @@ BEGIN
 			 IF (@HD<>'01' AND @SU<=0) SET @RK=N'假日'+@RK --20260804_AM1237_By_John:是例假日(週六、週日)或是[國定假日] && [不是店主任的上班日]:就判定為[假日]。
 			 IF @RK ='' AND (@IN='' OR @OUT='' OR (@IN=@OUT)) SET @RK=N'異常'
 		--==============================================================      
-		declare @Is_Late as bit		--是否遲到。
-		declare @Is_Absent as bit	--是否缺席。
-		set @Is_Late=0
-		set @Is_Absent=0
+		declare @Is_Late as bit=0;		--是否遲到。
+		declare @Is_Absent as bit=0;	--是否缺席。		
 		--============================
-		DECLARE @FlowCaseId int
-		DECLARE @LeaveCode NVARCHAR(30)
-		DECLARE @Leave_FromDate NVARCHAR(30)
-		DECLARE @Leave_ToDate   NVARCHAR(30)
-		DECLARE @Leave_FromTime NVARCHAR(30)
-		DECLARE @Leave_ToTime  NVARCHAR(30)				
-		--===
-		set @FlowCaseId=0
-		set @LeaveCode=''
-		set @Leave_FromDate=''
-		set @Leave_ToDate=''
-		set @Leave_FromTime=''
-		set @Leave_ToTime=''		
+		DECLARE @FlowCaseId int =0;
+		DECLARE @LeaveCode NVARCHAR(30)='';
+		DECLARE @Leave_FromDate NVARCHAR(30)='';
+		DECLARE @Leave_ToDate   NVARCHAR(30)='';
+		DECLARE @Leave_FromTime NVARCHAR(30)='';
+		DECLARE @Leave_ToTime  NVARCHAR(30)='';						
 		--============================
 		SELECT top 1 
 		@FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
@@ -307,6 +298,24 @@ BEGIN
 		--PRINT CONCAT('@Leave_FromTime=', @Leave_FromTime)
 		--PRINT CONCAT('@Leave_ToTime=', @Leave_ToTime)		 
 		--==============================================================
+		DECLARE @tmp_is_hour_unit_leave as BIT = 0;
+		IF @LeaveCode IN
+		(
+		    '',
+		    'NO PAY LEAVE',
+		    'SICK LEAVE WITH PAY',
+		    'OFFICIAL LEAVE',
+		    'PRENATAL VISIT LEAVE',
+		    'FAMILY CARE LEAVE',
+		    'PATERNITY LEAVE',
+		    'COMPENSATION LEAVE',
+		    'SICK LEAVE',
+		    'SICK LEAVE NO PAY'
+		)
+		BEGIN
+		    SET @tmp_is_hour_unit_leave = 1;
+		END
+		--==============================================================
 		IF ((CHARINDEX(N'AM/PM', @RK) > 0) or (CHARINDEX(N'假日', @RK) > 0))
 		BEGIN
 			set @Is_Late=0
@@ -314,6 +323,10 @@ BEGIN
 		END
 		ELSE		--===========================		
 		BEGIN
+		   IF (@tmp_is_hour_unit_leave='1')
+		   BEGIN
+		   --假別使用"小時"為單位:
+		   --=============
 		   --[1]:是否[缺勤]:
 		   declare @Total_Leave_Hour as int
 		   SELECT @Total_Leave_Hour=isnull(dbo.fn_Get_Leave_TotalHour(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) ,0) --2026-06-01		   
@@ -360,6 +373,11 @@ BEGIN
 		   begin
 		      set @Is_Late=1 --遲到
 		   end
+		   END
+		   ELSE
+		   BEGIN
+		     print N'假別使用[天]為單位。'
+		   END
 		END
 		--==============================================================
 		INSERT INTO dbo.Attn_DETL
