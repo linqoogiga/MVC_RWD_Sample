@@ -1,0 +1,392 @@
+﻿use [BLSOmnibackend]
+GO
+--#1-1_[141=UAT_DB]_Crack版_SQL_Agent_[Gen_Office_Attn_SignBack]_執行指令_原始碼.sql
+--=======================================================
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+Alter PROCEDURE [dbo].[SP_Gen_Office_Attn_SignBack]
+AS
+BEGIN
+
+DECLARE @STD DATE
+DECLARE @END DATE
+DECLARE @Period NVARCHAR(30)
+SET @STD = DATEADD(mm,-1,'2026-07-31 03:00:00') 
+PRINT @STD
+--SET @STD = DATEADD(mm,0,GETDATE()) 
+SET @Period =  CONCAT(FORMAT(YEAR(@STD),'0000'),'-',FORMAT(MONTH(@STD),'00'))
+PRINT  CONCAT('@STD=', @STD)
+PRINT CONCAT('@Period=', @Period)
+
+--======================================================
+--SET @END= DATEADD(MONTH, ((YEAR(@STD) - 1900) * 12) + MONTH(@STD), -1)
+PRINT MONTH(@STD)
+PRINT DATEADD(MONTH,1518, -1)
+PRINT EOMONTH(@STD)
+--===========================
+--SELECT CAST(-1 AS DATETIME)
+--SQL數字轉日期:
+-- -1 ==> 1899-12-31 00:00:00.000
+--  0 ==> 1900-01-01 00:00:00.000
+--  1 ==> 1900-01-02 00:00:00.000
+--======================================================
+SET @STD = DATEADD(DAY,(DAY(@STD)*-1)+1,@STD)
+PRINT CONCAT(N'第2次:@STD=', @STD)
+--===========================
+--獲得該月份的最後1日:
+--MSSQL 2012 以後的版本，可用SELECT EOMONTH('2026-06-01')、SET @END= EOMONTH(@STD)取代。
+--SET @END= DATEADD(MONTH, ((YEAR(@STD) - 1900) * 12) + MONTH(@STD), -1)
+SET @END= EOMONTH(@STD)
+PRINT CONCAT('@END=', @END)
+--===========================
+DECLARE @WD NVARCHAR(10) = CONVERT(NVARCHAR(10),@STD,112)
+PRINT CONCAT('@WD=', @WD) --20260601
+--======================================================
+DECLARE @DAYS INT 
+SET @DAYS = DATEDIFF(DAY,@STD,@END)
+PRINT CONCAT('@DAYS=', @DAYS)
+--===========================
+DECLARE @ST INT = 0;
+DECLARE @D TABLE
+(
+    VAL INT
+)
+
+/*
+QOO_DEBUG:
+WHILE @ST <= @DAYS
+BEGIN
+	INSERT INTO @D VALUES (@ST)			
+	SET @ST = @ST + 1
+END
+*/
+INSERT INTO @D VALUES ('20')	
+INSERT INTO @D VALUES ('21')		
+INSERT INTO @D VALUES ('22')		
+select * from @D  --以2026-06-01~2026-06-30為例: 0~29
+--======================================================
+--SELECT sa01_clas,* FROM blspostwn.dbo.tb_sa01(NOLOCK)  
+--20260730_PM1900_By_Shawn:
+--tb_sa01.sa01_clas:
+--O:Office=辦公室總部的員工。
+--C:Cashier=門市收銀員=門市店員。
+--S:Staff=不屬於辦公室&也不屬於門市的員工=店主任。
+--======================================================
+DECLARE MyCursor CURSOR FOR 
+
+SELECT AA.za40_usid  EmpId,
+	   AA.za40_name  EmpName,
+	   AA.za40_email Email	  
+FROM 
+(
+	SELECT * ,
+		(SELECT sa01_clas FROM blspostwn.dbo.tb_sa01(NOLOCK) 
+		  WHERE sa01_faid=za40_usid) EmpType 
+	  FROM blspostwn.dbo.tb_za40(NOLOCK) 
+     WHERE za40_slyn='Y' 
+       AND za40_sosk='1'
+       AND( --QOODEBUG==>za40_usid LIKE '2298%' or 
+	   za40_usid='TEST01')
+	   --AND za40_dpcd<>'205' --倉務部 20250923 Michelle 加入倉庫
+	   --AND za40_usid NOT IN ('2298311123','2298310051','2298311090') --林謀嘉 / 張嘉珍 /Tammy Yu   
+	   --AND za40_usid NOT IN ('2298311123','2298311090') --林謀嘉 / Tammy Yu   
+                     AND za40_usid NOT IN ('2298110305','2298110306') --林謀嘉 / Tammy Yu   2022.10.13 發現換工號
+) AA 
+WHERE AA.EmpType='O'  
+  AND AA.za40_grad<>'G1'
+  --AND AA.za40_usid='2298311094'
+
+ORDER BY AA.za40_grad
+
+
+Open MyCursor 
+DECLARE @ID NVARCHAR(50)
+DECLARE @NA NVARCHAR(50)
+DECLARE @EM NVARCHAR(50)
+
+Fetch NEXT FROM MyCursor INTO @ID,@NA,@EM
+While (@@FETCH_STATUS <> -1)
+BEGIN	
+	PRINT @NA
+	DECLARE @INTTY INT
+	INSERT INTO dbo.Attn_HDR
+	(
+	    UserNo,
+	    UserName,
+		Email,
+	    PeriodName,
+	    SignFlag,
+	    SignDate,
+	    SignBy,
+	    Created,
+	    Creator,
+	    LastModified,
+	    LastModifiedBy,
+	    StatusId,
+		MailFlag
+	)
+	VALUES
+	(   @ID,        -- UserNo - nvarchar(10)
+	    @NA,        -- UserName - nvarchar(20)
+		@EM,	    
+		@Period,
+	    N'N',       -- SignFlag - nvarchar(10)
+	    NULL,       -- SignDate - datetime
+	    N'',        -- SignBy - nvarchar(10)
+	    GETDATE(),  -- Created - datetime
+	    N'System',  -- Creator - nvarchar(20)
+	    GETDATE(),  -- LastModified - datetime
+	    N'System',  -- LastModifiedBy - nvarchar(20)
+	    1        ,   -- StatusId - int
+		'N'
+	    )
+	--==============================
+	SELECT @INTTY = @@IDENTITY 
+	--PRINT @INTTY
+	DECLARE TCursor CURSOR FOR 
+	SELECT * FROM @D
+	Open TCursor 
+	--==============================
+	DECLARE @DD INT
+	Fetch NEXT FROM TCursor INTO @DD
+	WHILE (@@FETCH_STATUS <> -1)
+		BEGIN
+			PRINT CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)
+			DECLARE @IN  NVARCHAR(5)
+			DECLARE @OUT NVARCHAR(5)
+			DECLARE @WT  DECIMAL(8,2)
+			DECLARE @HD  DECIMAL(8,2)
+			DECLARE @SU  DECIMAL(8,2)
+			SELECT @IN = ISNULL(CONVERT(NVARCHAR(20),MIN(DoorTime),108),''),
+			       @OUT= ISNULL(CONVERT(NVARCHAR(20),MAX(DoorTime),108),''),
+				   @WT = DATEDIFF(MINUTE,MIN(DoorTime),MAX(DoorTime))/60.00 ,
+				   @HD = (SELECT da01_type FROM blspostwn.dbo.rp_da01(NOLOCK) WHERE da01_date=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)),
+				   @SU = (SELECT COUNT(*) FROM dbo.AttnRemark(NOLOCK) WHERE WorkDate>=@WD AND EmpNo=@ID)
+			  FROM BLSOmnibackend.dbo.AttnLog(NOLOCK) 
+			 WHERE EmpNo=@ID 
+			   AND WorkDate=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)     
+		--IF @HD = '01' 
+		--BEGIN									
+			--請假
+			DECLARE @RK NVARCHAR(200)   		
+			SET @RK = ''	
+			SELECT @RK=ISNULL(BB.myLeave,'') FROM (
+			SELECT (	
+			SELECT (AA.LeaveCode +'-'+ CASE WHEN AA.FromTime=AA.ToTime THEN AA.FromTime ELSE AA.FromTime+'/'+AA.ToTime END+' ')
+			FROM (
+			SELECT LeaveCode  AS LeaveCode,
+			       FromDate,ToDate,
+				   FromTime,ToTime
+			  FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID
+			  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate			
+			  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
+			  AND FlowCaseId NOT IN (SELECT ISNULL(RelatedFlowCaseId,0) FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID)			  
+			) AA ORDER BY FromTime FOR XML PATH('') ) AS myLeave
+			) BB
+			--主任排班
+			DECLARE @SF NVARCHAR(100)
+			SET @SF = ''
+			SELECT @SF = Remark
+			  FROM AttnRemark(NOLOCK)
+			 WHERE WorkDate = CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)
+			   AND EmpNo = @ID
+			 IF @SF<>''
+				SET @RK = @RK +',' +@SF
+			--補刷卡
+			DECLARE @ClockIn NVARCHAR(30)
+			SET @ClockIn =''
+			SELECT @ClockIn =AA.ClockInTime FROM (
+			SELECT   
+				--CASE WHEN b.OnTime IS NULL AND b.OffTime IS NOT NULL THEN CONVERT(NVARCHAR(5),b.OffTime)
+				--	 WHEN b.OnTime IS NOT NULL AND b.OffTime IS NULL THEN CONVERT(NVARCHAR(5),b.OnTime)
+			 --        ELSE CONCAT(CONVERT(NVARCHAR(5),b.OnTime),'/',CONVERT(NVARCHAR(5),b.OffTime))  
+			 --   END AS ClockInTime       
+			CASE WHEN MIN(b.OnTime) IS NULL AND MAX(b.OffTime) IS NOT NULL THEN CONVERT(NVARCHAR(5),MAX(b.OffTime))
+					 WHEN MIN(b.OnTime) IS NOT NULL AND MAX(b.OffTime) IS NULL THEN CONVERT(NVARCHAR(5),MIN(b.OnTime))
+			         ELSE CONCAT(CONVERT(NVARCHAR(5),MIN(b.OnTime)),'/',CONVERT(NVARCHAR(5),MAX(b.OffTime)))  
+			END AS ClockInTime       
+            FROM BLSOmnibackend.dbo.Complement_ClockIn_Hdr(NOLOCK) a ,
+                 BLSOmnibackend.dbo.Complement_ClockIn_Detl(NOLOCK) b,
+	             BLSOmnibackend.dbo.WF_FlowCases(NOLOCK) c
+           WHERE a.HdrId = B.HdrId
+             AND a.FlowCaseId = c.FlowCaseId
+             AND C.Approved IS NOT NULL
+             AND a.Username=@ID
+			 AND Date = CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)
+			 ) AA
+			 IF @ClockIn<>'/'
+				SET @RK = @RK + N',補打卡:'+@ClockIn
+			--加班
+			DECLARE @OverTime NVARCHAR(30)
+			SET @OverTime = ''
+			--加班單顯示範例 : 加班: 19:00 – 22:00 
+			SELECT @OverTime = CONCAT(AA.FromTime,'-',AA.ToTime)
+			FROM (   
+					SELECT 
+							CONVERT(NVARCHAR(10),(SELECT B.DateValue 
+							                        FROM BLSOmnibackend.dbo.WF_FlowPropertys(NOLOCK) A , 
+													     BLSOmnibackend.dbo.WF_CasePropertyValues(NOLOCK) B
+			                                       WHERE a.FlowPropertyId = b.PropertyId
+			                                         AND PropertyName='Date'
+			                                         AND B.FlowCaseId = C.FlowCaseId
+		                     ) ,120) AS OTDate,
+							 (SELECT StringValue 
+							    FROM BLSOmnibackend.dbo.WF_FlowPropertys(NOLOCK) A , 
+		                             BLSOmnibackend.dbo.WF_CasePropertyValues(NOLOCK) B
+		                       WHERE a.FlowPropertyId = b.PropertyId
+			                     AND PropertyName='From'
+			                     AND B.FlowCaseId = C.FlowCaseId
+							 ) AS FromTime,
+							 (SELECT StringValue 
+		                        FROM BLSOmnibackend.dbo.WF_FlowPropertys(NOLOCK) A , 
+		                             BLSOmnibackend.dbo.WF_CasePropertyValues(NOLOCK) B
+		                       WHERE a.FlowPropertyId = b.PropertyId
+			                     AND PropertyName='To'
+			                     AND B.FlowCaseId = C.FlowCaseId
+		                      ) AS ToTime								
+					FROM BLSOmnibackend.dbo.WF_FlowCases(NOLOCK) C
+				   WHERE C.UserNo = @ID
+				     AND C.StatusId>0
+                     AND Created>='2022-01-01'
+					 AND C.Approved IS NOT NULL
+                     AND C.FlowId IN (
+                         SELECT FlowId 
+						   FROM BLSOmnibackend.dbo.WF_Flows(NOLOCK) 
+                          WHERE FlowGroupId IN (
+							SELECT FlowGroupId
+							  FROM BLSOmnibackend.dbo.WF_FlowGroups(NOLOCK) 
+                             WHERE FlowTypeId IN (
+                              SELECT FlowTypeId 
+                                FROM BLSOmnibackend.dbo.WF_FlowTypes(NOLOCK) 
+                               WHERE Name=N'Overtime' 
+                                 AND StatusId=1 
+                            )))) AA
+	         WHERE AA.OTDate = CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)
+
+			 IF @OverTime<>''
+				SET @RK = @RK + N',加班:'+@OverTime
+			 --假日也要有資料
+			 PRINT @HD
+			 PRINT @SU
+			 IF (@HD<>'01' AND @SU<=0) SET @RK=N'假日'+@RK --20260804_AM1237_By_John:是例假日(週六、週日)或是[國定假日] && [不是店主任的上班日]:就判定為[假日]。
+			 IF @RK ='' AND (@IN='' OR @OUT='' OR (@IN=@OUT)) SET @RK=N'異常'
+		--==============================================================      
+		declare @Is_Late as bit		--是否遲到。
+		declare @Is_Absent as bit	--是否缺席。
+		set @Is_Late=0
+		set @Is_Absent=0
+		--============================
+		DECLARE @FlowCaseId int
+		DECLARE @LeaveCode NVARCHAR(30)
+		DECLARE @Leave_FromDate NVARCHAR(30)
+		DECLARE @Leave_ToDate   NVARCHAR(30)
+		DECLARE @Leave_FromTime NVARCHAR(30)
+		DECLARE @Leave_ToTime  NVARCHAR(30)				
+		--===
+		set @FlowCaseId=0
+		set @LeaveCode=''
+		set @Leave_FromDate=''
+		set @Leave_ToDate=''
+		set @Leave_FromTime=''
+		set @Leave_ToTime=''		
+		--============================
+		DECLARE @LeaveData TABLE (
+		    FlowCaseId int,
+		    LeaveCode NVARCHAR(50),   
+			FromDate  NVARCHAR(30),
+		    ToDate    NVARCHAR(30),
+		    FromTime  NVARCHAR(30),
+		    ToTime    NVARCHAR(30)
+		)
+		
+		--先把符合條件的請假資料撈進來（過濾條件只寫一次）
+		INSERT INTO @LeaveData (FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime)
+		SELECT FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime
+		FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+		WHERE UserNo = @ID
+		  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate
+		  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
+		  AND FlowCaseId NOT IN (
+		        SELECT ISNULL(RelatedFlowCaseId, 0)
+		        FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+		        WHERE UserNo =@ID
+		  );
+		
+		--取得整段請假的起訖時間
+		SELECT top 1 @FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
+		@Leave_FromTime=FromTime, @Leave_ToTime=ToTime
+		FROM @LeaveData
+		--===
+		PRINT CONCAT('@FlowCaseId=', @FlowCaseId)
+		PRINT CONCAT('@LeaveCode=', @LeaveCode)
+		PRINT CONCAT('@Leave_FromDate=', @Leave_FromDate)
+		PRINT CONCAT('@Leave_ToDate=', @Leave_ToDate)
+		PRINT CONCAT('@Leave_FromTime=', @Leave_FromTime)
+		PRINT CONCAT('@Leave_ToTime=', @Leave_ToTime)		 
+		--==============================================================
+		IF ((CHARINDEX(N'AM/PM', @RK) > 0) or (CHARINDEX(N'假日', @RK) > 0))
+		BEGIN
+			set @Is_Late=0
+			set @Is_Absent=0
+		END
+		ELSE
+		BEGIN
+			set @Is_Late=1
+			set @Is_Absent=1
+		END
+		--==============================================================
+		INSERT INTO dbo.Attn_DETL
+		(
+		    HDR_Id,
+		    WorkDate,
+		    InTime,
+		    OutTime,
+		    WorkHours,
+		    Reason,
+		    Remark,
+		    SysRemark,
+		    Created,
+		    Creator,
+		    LastModified,
+		    LastModifiedBy,
+		    StatusId,
+			Is_Late, 
+			Is_Absent 
+		)
+		VALUES
+		(   @INTTY,         -- HDR_Id - int
+		    CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112),       -- WorkDate - nvarchar(10)
+		    @IN,      -- InTime - nvarchar(10)
+		    @OUT,     -- OutTime - nvarchar(10)
+		    @WT,      -- WorkHours - decimal(8, 2)
+		    N'',       -- Reason - nvarchar(30)
+		    --N'',       -- Remark - nvarchar(30)
+			ISNULL(@RK,''),
+		    CASE WHEN @WT>9.5 THEN 'OT' ELSE '' END,       -- SysRemark - nvarchar(30)
+		    GETDATE(), -- Created - datetime
+		    N'SYSTEM',       -- Creator - nvarchar(20)
+		    GETDATE(), -- LastModified - datetime
+		    N'SYSTEM',       -- LastModifiedBy - nvarchar(20)
+		    1,          -- StatusId - int
+			@Is_Late,
+			@Is_Absent
+		)
+		--END
+		Fetch NEXT FROM TCursor INTO @DD
+		END
+		CLOSE TCursor
+		DEALLOCATE TCursor
+
+FETCH NEXT FROM MyCursor INTO @ID,@NA,@EM
+END
+
+
+CLOSE MyCursor
+DEALLOCATE MyCursor
+
+END
+GO

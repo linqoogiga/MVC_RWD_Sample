@@ -82,7 +82,7 @@ namespace MVC_RWD_Sample.Controllers
             DateTime tmp_LunchStart_DT = p_From_DT.Date.AddHours(12).AddMinutes(30); // 12:30
             DateTime tmp_LunchEnd_DT = p_From_DT.Date.AddHours(14);                  // 14:00
             //===============
-            if (p_From_DT < tmp_LunchStart_DT && p_To_DT > tmp_LunchEnd_DT)
+            if (p_From_DT <= tmp_LunchStart_DT && p_To_DT >= tmp_LunchEnd_DT)
             {
                 // 請假區間完整涵蓋午休，扣除 1.5 小時
                 tmp_TotalHours = (p_To_DT - p_From_DT).TotalHours - 1.5;
