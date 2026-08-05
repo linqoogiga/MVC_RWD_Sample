@@ -57,16 +57,16 @@ DECLARE @D TABLE
 )
 
 /*
-QOO_DEBUG:
+QOO_DEBUG:*/
 WHILE @ST <= @DAYS
 BEGIN
 	INSERT INTO @D VALUES (@ST)			
 	SET @ST = @ST + 1
 END
-*/	
+--===
 --INSERT INTO @D VALUES ('21')
 --INSERT INTO @D VALUES ('22')
-INSERT INTO @D VALUES ('23')
+--INSERT INTO @D VALUES ('23')
 --INSERT INTO @D VALUES ('24')
 select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
@@ -295,32 +295,10 @@ BEGIN
 		set @Leave_FromTime=''
 		set @Leave_ToTime=''		
 		--============================
-		DECLARE @LeaveData TABLE (
-		    FlowCaseId int,
-		    LeaveCode NVARCHAR(50),   
-			FromDate  NVARCHAR(30),
-		    ToDate    NVARCHAR(30),
-		    FromTime  NVARCHAR(30),
-		    ToTime    NVARCHAR(30)
-		)
-		
-		--先把符合條件的請假資料撈進來（過濾條件只寫一次）
-		INSERT INTO @LeaveData (FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime)
-		SELECT FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime
-		FROM dbo.OfficeApprovedLeaveView(NOLOCK)
-		WHERE UserNo = @ID
-		  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate
-		  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
-		  AND FlowCaseId NOT IN (
-		        SELECT ISNULL(RelatedFlowCaseId, 0)
-		        FROM dbo.OfficeApprovedLeaveView(NOLOCK)
-		        WHERE UserNo =@ID
-		  );
-		
-		--取得整段請假的起訖時間
-		SELECT top 1 @FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
+		SELECT top 1 
+		@FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
 		@Leave_FromTime=FromTime, @Leave_ToTime=ToTime
-		FROM @LeaveData
+		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) 
 		--===
 		--PRINT CONCAT('@FlowCaseId=', @FlowCaseId)
 		--PRINT CONCAT('@LeaveCode=', @LeaveCode)
