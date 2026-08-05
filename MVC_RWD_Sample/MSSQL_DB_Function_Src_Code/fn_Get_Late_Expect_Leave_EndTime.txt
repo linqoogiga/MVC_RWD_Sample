@@ -1,0 +1,68 @@
+﻿USE [BLSOmnibackend]
+--#10-1_[141=UAT_DB]_計算如果遲到_預期要請假的結束時間_否則就算[遲到]:
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_GetSKUByECProductCode]    Script Date: 2026/8/5 下午 03:29:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE FUNCTION [dbo].[fn_Get_Late_Expect_Leave_EndTime]
+(
+    @Work_In_Time NVARCHAR(5)
+)
+RETURNS NVARCHAR(5)
+AS
+BEGIN
+
+    DECLARE @WorkTime TIME;
+    DECLARE @Expect_Leave_EndTime NVARCHAR(5);
+
+    SET @WorkTime = TRY_CONVERT(TIME, @Work_In_Time);
+
+    -- 防呆
+    IF @WorkTime IS NULL
+        RETURN NULL;
+
+    -- 10:00以前
+    IF @WorkTime <= '10:00'
+        RETURN '10:00';
+
+    -- 午休期間
+    IF @WorkTime > '12:30'
+       AND @WorkTime <= '14:00'
+        RETURN '12:30';
+
+    -- 超過下班時間
+    IF @WorkTime >= '19:00'
+        RETURN '19:00';
+
+    DECLARE @Hour INT;
+    DECLARE @Minute INT;
+
+    SET @Hour = DATEPART(HOUR, @WorkTime);
+    SET @Minute = DATEPART(MINUTE, @WorkTime);
+
+    -- 向上取整到30分鐘
+    IF @Minute = 0
+    BEGIN
+        SET @Expect_Leave_EndTime =
+            RIGHT('00' + CAST(@Hour AS VARCHAR(2)), 2)
+            + ':00';
+    END
+    ELSE IF @Minute <= 30
+    BEGIN
+        SET @Expect_Leave_EndTime =
+            RIGHT('00' + CAST(@Hour AS VARCHAR(2)), 2)
+            + ':30';
+    END
+    ELSE
+    BEGIN
+        SET @Expect_Leave_EndTime =
+            RIGHT('00' + CAST(@Hour + 1 AS VARCHAR(2)), 2)
+            + ':00';
+    END
+
+    RETURN @Expect_Leave_EndTime;
+
+END
+GO

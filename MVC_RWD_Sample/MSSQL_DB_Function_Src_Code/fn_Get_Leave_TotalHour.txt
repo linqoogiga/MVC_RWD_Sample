@@ -1,0 +1,123 @@
+﻿USE [BLSOmnibackend]
+--計算指定UserNo_日期_的總請假時數:
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_GetSKUByECProductCode]    Script Date: 2026/8/5 下午 03:29:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Alter FUNCTION [dbo].[fn_Get_Leave_TotalHour]
+(
+    @UserNo NVARCHAR(100),
+    @FromDate DATETIME
+)
+RETURNS INT
+AS
+BEGIN
+
+    DECLARE @Sum_TotalHours INT;
+
+    SELECT @Sum_TotalHours = ISNULL(SUM(TotalHours), 0) from
+	(
+	 select distinct *  from
+    (
+        SELECT
+            wffc.FlowCaseId,
+            wfcnr.Receiver,
+            wffc.RelatedFlowCaseId,
+
+            (
+                SELECT DateValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'FromDate'
+            ) AS FromDate,
+
+            (
+                SELECT StringValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'FromTime'
+            ) AS FromTime,
+
+            (
+                SELECT DateValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'ToDate'
+            ) AS ToDate,
+
+            (
+                SELECT StringValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'ToTime'
+            ) AS ToTime,
+
+            (
+                SELECT StringValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'LeaveCode'
+            ) AS LeaveCode,
+
+            (
+                SELECT StringValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'IsMenstrualLeave'
+            ) AS IsMenstrualLeave,
+
+            (
+                SELECT NumericValue
+                FROM WF_CasePropertyValues wfcpv
+                LEFT JOIN WF_FlowPropertys wffp
+                    ON wfcpv.PropertyId = wffp.FlowPropertyId
+                WHERE wfcpv.FlowCaseId = wffc.FlowCaseId
+                    AND wffp.PropertyName = 'TotalHours'
+            ) AS TotalHours
+
+        FROM WF_CaseNotifications wfcn
+        LEFT JOIN WF_CaseNotificationReceivers wfcnr
+            ON wfcn.CaseNotificationId = wfcnr.CaseNotificationId
+        LEFT JOIN WF_FlowCases wffc
+            ON wfcn.FlowCaseId = wffc.FlowCaseId
+        LEFT JOIN WF_CasePropertyValues wfcpv
+            ON wfcpv.FlowCaseId = wfcn.FlowCaseId
+        LEFT JOIN WF_FlowPropertys wffp
+            ON wfcpv.PropertyId = wffp.FlowPropertyId
+        WHERE
+            wfcnr.IsDissmissed IN (0,1)
+            AND wfcnr.StatusId = 1
+            AND wfcn.StatusId > 0
+            AND wffc.UserNo = @UserNo
+            AND wfcnr.Receiver = @UserNo
+            AND wfcpv.StringValue IS NOT NULL
+            AND wfcpv.StringValue <> ''
+            AND Approved IS NOT NULL
+            AND Approved <> ''
+            AND NotificationType = '6'
+            AND wffc.StatusId > 0
+    ) A
+    WHERE
+        A.FromDate >= @FromDate
+        AND A.FromDate < DATEADD(DAY, 1, @FromDate)
+        AND A.RelatedFlowCaseId IS NULL
+        AND A.FlowCaseId <> '0') AS B;
+
+    RETURN ISNULL(@Sum_TotalHours, 0);
+
+END
+GO
