@@ -114,8 +114,15 @@ BEGIN
     WHERE
         A.FromDate >= @FromDate
         AND A.FromDate < DATEADD(DAY, 1, @FromDate)
-        AND A.RelatedFlowCaseId IS NULL
-        AND A.FlowCaseId <> '0') AS B;
+        and (A.RelatedFlowCaseId is null or A.RelatedFlowCaseId = 0)  --排除本身[WF_FlowCases]是代表Cancel的假期。
+
+        and A.FlowCaseId NOT IN (
+    --排除已經Cancel的假期。
+	SELECT ISNULL(RelatedFlowCaseId, 0)
+	FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+	WHERE UserNo=@UserNo
+)
+) AS B;
 
     RETURN ISNULL(@Sum_TotalHours, 0);
 

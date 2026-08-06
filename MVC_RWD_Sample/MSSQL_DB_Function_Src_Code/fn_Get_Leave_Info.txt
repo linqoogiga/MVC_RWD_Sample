@@ -1,11 +1,11 @@
 ﻿USE [BLSOmnibackend]
 GO
-/****** Object:  UserDefinedFunction [dbo].[fn_Get_Leave_TotalHour]    Script Date: 2026/8/5 下午 05:45:56 ******/
+/****** Object:  UserDefinedFunction [dbo].[fn_Get_Leave_Info]    Script Date: 2026/8/6 下午 02:56:36 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE FUNCTION [dbo].[fn_Get_Leave_Info]
+ALTER FUNCTION [dbo].[fn_Get_Leave_Info]
 (
     @UserNo NVARCHAR(100),
     @FromDate DATETIME
@@ -110,8 +110,13 @@ RETURN
     ) A
     WHERE
         A.FromDate >= @FromDate
-        AND A.FromDate < DATEADD(DAY, 1, @FromDate)
-        AND A.RelatedFlowCaseId IS NULL
-        AND A.FlowCaseId <> '0'
+        AND A.FromDate < DATEADD(DAY, 1, @FromDate)        
+		and (A.RelatedFlowCaseId is null or A.RelatedFlowCaseId = 0)  --排除本身[WF_FlowCases]是代表Cancel的假期。
+       and A.FlowCaseId NOT IN (
+    --排除已經Cancel的假期。
+	SELECT ISNULL(RelatedFlowCaseId, 0)
+	FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+	WHERE UserNo=@UserNo
+)
 );
 GO
