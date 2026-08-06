@@ -369,9 +369,10 @@ BEGIN
 		BEGIN
 		    SET @tmp_is_hour_unit_leave = 1;
 		END
-		--==============================================================
-		IF ((CHARINDEX(N'AM/PM', @RK) > 0) or (CHARINDEX(N'假日', @RK) > 0))
+		--==============================================================		
+		IF ((CHARINDEX(N'AM/PM', @RK) > 0) or (CHARINDEX(N'假日', @RK) > 0) or (CHARINDEX(N'09:00/18:00 ', @RK) > 0))
 		BEGIN
+		    --假日、請1天或請多天_每天都是請完整的一整天，就不用做任何[遲到],[缺勤]的判定。
 			set @Is_Late=0
 			set @Is_Absent=0
 		END
