@@ -284,19 +284,73 @@ BEGIN
 		DECLARE @Leave_FromDate NVARCHAR(30)='';
 		DECLARE @Leave_ToDate   NVARCHAR(30)='';
 		DECLARE @Leave_FromTime NVARCHAR(30)='';
-		DECLARE @Leave_ToTime  NVARCHAR(30)='';						
+		DECLARE @Leave_ToTime  NVARCHAR(30)='';		
+		--============================
+		SET @FlowCaseId = 0;
+		SET @LeaveCode  = '';
+		SET @Leave_FromDate = '';
+		SET @Leave_ToDate   = '';
+		SET @Leave_FromTime = '';
+		SET @Leave_ToTime   = '';
+		SET @Is_Late   = 0;
+		SET @Is_Absent = 0;
 		--============================
 		SELECT top 1 
 		@FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
 		@Leave_FromTime=FromTime, @Leave_ToTime=ToTime
 		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) 
+		--==============================================================
+		--今天是否有在某段_假別_的_時間區間_之內:
+		--Btw:Between:
+		DECLARE @Btw_FlowCaseId int =0;
+		DECLARE @Btw_LeaveCode NVARCHAR(30)='';
+		DECLARE @Btw_Leave_FromDate NVARCHAR(30)='';
+		DECLARE @Btw_Leave_ToDate   NVARCHAR(30)='';
+		DECLARE @Btw_Leave_FromTime NVARCHAR(30)='';
+		DECLARE @Btw_Leave_ToTime  NVARCHAR(30)='';						
+		--============================
+		DECLARE @Btw_LeaveData TABLE (
+		    FlowCaseId int,
+		    LeaveCode NVARCHAR(50),   
+			FromDate  NVARCHAR(30),
+		    ToDate    NVARCHAR(30),
+		    FromTime  NVARCHAR(30),
+		    ToTime    NVARCHAR(30)
+		)
+		--============================
+		--迴圈內清空預設值:
+		SET @Btw_FlowCaseId    = 0;
+		SET @Btw_LeaveCode     = '';
+		SET @Btw_Leave_FromDate= '';
+		SET @Btw_Leave_ToDate  = '';
+		SET @Btw_Leave_FromTime= '';
+		SET @Btw_Leave_ToTime  = '';
+		DELETE FROM @Btw_LeaveData;   -- 清空累加的資料表變數
+		--============================
+		--先把符合條件的請假資料撈進來（過濾條件只寫一次）
+		INSERT INTO @Btw_LeaveData (FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime)
+		SELECT FlowCaseId, LeaveCode, FromDate, ToDate ,FromTime, ToTime
+		FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+		WHERE UserNo = @ID
+		  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate
+		  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
+		  AND FlowCaseId NOT IN (
+		        SELECT ISNULL(RelatedFlowCaseId, 0)
+		        FROM dbo.OfficeApprovedLeaveView(NOLOCK)
+		        WHERE UserNo =@ID
+		  );
+		
+		--取得整段請假的起訖時間
+		SELECT top 1 @Btw_FlowCaseId=FlowCaseId, @Btw_LeaveCode=LeaveCode,@Btw_Leave_FromDate = FromDate,@Btw_Leave_ToDate=ToDate, 
+		@Btw_Leave_FromTime=FromTime, @Btw_Leave_ToTime=ToTime
+		FROM @Btw_LeaveData
 		--===
-		--PRINT CONCAT('@FlowCaseId=', @FlowCaseId)
-		--PRINT CONCAT('@LeaveCode=', @LeaveCode)
-		--PRINT CONCAT('@Leave_FromDate=', @Leave_FromDate)
-		--PRINT CONCAT('@Leave_ToDate=', @Leave_ToDate)
-		--PRINT CONCAT('@Leave_FromTime=', @Leave_FromTime)
-		--PRINT CONCAT('@Leave_ToTime=', @Leave_ToTime)		 
+		PRINT CONCAT('@Btw_FlowCaseId=', @Btw_FlowCaseId)
+		PRINT CONCAT('@Btw_LeaveCode=', @Btw_LeaveCode)
+		PRINT CONCAT('@Btw_Leave_FromDate=', @Btw_Leave_FromDate)
+		PRINT CONCAT('@Btw_Leave_ToDate=', @Btw_Leave_ToDate)
+		PRINT CONCAT('@Btw_Leave_FromTime=', @Btw_Leave_FromTime)
+		PRINT CONCAT('@Btw_Leave_ToTime=', @Btw_Leave_ToTime)		 		
 		--==============================================================
 		DECLARE @tmp_is_hour_unit_leave as BIT = 0;
 		IF @LeaveCode IN
@@ -329,6 +383,7 @@ BEGIN
 		   --=============
 		   --[1]:是否[缺勤]:
 		   declare @Total_Leave_Hour as int
+		   set @Total_Leave_Hour=0
 		   SELECT @Total_Leave_Hour=isnull(dbo.fn_Get_Leave_TotalHour(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) ,0) --2026-06-01		   
 		   PRINT CONCAT('@Total_Leave_Hour=', @Total_Leave_Hour)	
 		   --===
@@ -349,6 +404,7 @@ BEGIN
 			--14:01~19:00 → 向上取整至最近的 30 分鐘
 			--19:00 之後 → 固定回傳 19:00
 		   declare @Expect_Leave_EndTime as NVARCHAR(5)
+		   set @Expect_Leave_EndTime=null
 		   SELECT @Expect_Leave_EndTime=dbo.fn_Get_Late_Expect_Leave_EndTime(@IN) 
 
 		   PRINT '=============='
