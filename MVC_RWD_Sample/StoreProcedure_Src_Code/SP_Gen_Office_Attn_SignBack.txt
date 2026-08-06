@@ -445,7 +445,7 @@ BEGIN
 				set @New_Hour_Unit_Leave_FromTime ='';
 				set @New_Hour_Unit_Leave_ToTime ='';					
 				--===========================
-				if(@Btw_Leave_FromDate=@Btw_Leave_FromTime)
+				if(@Btw_Leave_FromDate=@Btw_Leave_ToDate)
 				begin
 					print('請假只有1天:起始日期=結束日期:')
 					--===========================	
@@ -460,12 +460,12 @@ BEGIN
 					end
 					--===========================										
 					--[2-2]是否[遲到]:		  	
-					if(@Btw_Leave_FromTime='AM' and @Btw_Leave_FromTime='PM')
+					if(@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='PM')
 					begin
 						set @New_Hour_Unit_Leave_FromTime ='10:00'; 
 						set @New_Hour_Unit_Leave_ToTime ='19:00';				
 					end
-					else if(@Btw_Leave_FromTime='AM' and @Btw_Leave_FromTime='AM')
+					else if(@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='AM')
 					begin
 						set @New_Hour_Unit_Leave_FromTime ='10:00'; 
 						set @New_Hour_Unit_Leave_ToTime ='15:30';
@@ -476,7 +476,7 @@ BEGIN
 						--4小時 - 2.5小時=1.5小時。
 						--14:00 + 1.5小時 = 15:30。
 					end
-					else if(@Btw_Leave_FromTime='PM' and @Btw_Leave_FromTime='PM')
+					else if(@Btw_Leave_FromTime='PM' and @Btw_Leave_ToTime='PM')
 					begin
 						set @New_Hour_Unit_Leave_FromTime ='15:00'; --19:00 - 4小時 = 15:00
 						set @New_Hour_Unit_Leave_ToTime ='19:00';				
@@ -495,8 +495,68 @@ BEGIN
 				end
 				else
 				begin
-					print '不同天=請超過2天(含)'
-
+					print '請假請超過2天(含):起始日期!=結束日期:'
+					--===========================	
+					--[2-3]:是否[缺勤]:		   		   
+					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+					begin
+					   set @Is_Absent=0
+					end
+					else
+					begin
+					   set @Is_Absent=1 --缺勤
+					end
+					--===========================										
+					--[2-4]是否[遲到]:		  	
+					if(@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='PM')
+					begin
+						--如果請假:起始日期yyyy-MM-dd AM ~ 結束日期yyyy-MM-dd PM:
+						set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+						set @New_Hour_Unit_Leave_ToTime ='19:00';				
+					end
+					else if(@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='AM')
+					begin
+						--如果請假:起始日期yyyy-MM-dd AM ~ 結束日期yyyy-MM-dd AM:
+					    if(CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_ToDate)
+						begin
+						    --如果今天是假期的最後1天:
+							set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='15:30';						
+						end
+						else
+						begin
+						    --如果今天是假期的第1天_或是_位於[請假區間]中間的日期:
+							set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='19:00';		
+						end
+					end
+					else if(@Btw_Leave_FromTime='PM' and @Btw_Leave_ToTime='PM')
+					begin
+						--如果請假:起始日期yyyy-MM-dd PM ~ 結束日期yyyy-MM-dd PM:
+					    if(CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_FromDate)
+						begin
+						    --如果今天是假期的第1天:
+							set @New_Hour_Unit_Leave_FromTime ='15:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='19:00';						
+						end
+						else
+						begin
+						    --如果今天是假期的最後1天_或是_位於[請假區間]中間的日期:
+							set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='19:00';		
+						end
+					end
+					--===============
+					if(@IN<='10:00' or 
+					   (@New_Hour_Unit_Leave_FromTime<='10:00' and @New_Hour_Unit_Leave_ToTime>=@Expect_Leave_EndTime)
+					  )
+					begin
+					  set @Is_Late=0
+					end
+					else
+					begin
+					   set @Is_Late=1 --遲到
+					end
 				end
 		   END
 		END
