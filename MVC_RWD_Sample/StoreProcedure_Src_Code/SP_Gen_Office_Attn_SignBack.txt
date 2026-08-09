@@ -546,6 +546,28 @@ BEGIN
 							set @New_Hour_Unit_Leave_ToTime ='19:00';		
 						end
 					end
+					else if(@Btw_Leave_FromTime='PM' and @Btw_Leave_ToTime='AM')
+					begin
+						--如果請假:起始日期yyyy-MM-dd PM ~ 結束日期yyyy-MM-dd PM:
+					    if(CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_FromDate)
+						begin
+						    --如果今天是假期的第1天:
+							set @New_Hour_Unit_Leave_FromTime ='15:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='19:00';						
+						end
+						else if(CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_ToDate)
+						begin
+						    --如果今天是假期的最後1天:
+							set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='15:30';						
+						end
+						else
+						begin
+						    --如果今天是假期的位於[請假區間]中間的日期:
+							set @New_Hour_Unit_Leave_FromTime ='10:00'; 
+							set @New_Hour_Unit_Leave_ToTime ='19:00';		
+						end
+					end
 					--===============
 					if(@IN<='10:00' or 
 					   (@New_Hour_Unit_Leave_FromTime<='10:00' and @New_Hour_Unit_Leave_ToTime>=@Expect_Leave_EndTime)
