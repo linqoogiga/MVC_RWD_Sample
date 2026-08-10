@@ -63,12 +63,13 @@ BEGIN
 	INSERT INTO @D VALUES (@ST)			
 	SET @ST = @ST + 1
 END
+
 --===
 --INSERT INTO @D VALUES ('21')
 --INSERT INTO @D VALUES ('22')
 --INSERT INTO @D VALUES ('23')
---INSERT INTO @D VALUES ('24')
-select * from @D  --以2026-06-01~2026-06-30為例: 0~29
+--INSERT INTO @D VALUES ('25')
+--select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
 --SELECT sa01_clas,* FROM blspostwn.dbo.tb_sa01(NOLOCK)  
 --20260730_PM1900_By_Shawn:
@@ -447,7 +448,7 @@ BEGIN
 				--===========================
 				if(@Btw_Leave_FromDate=@Btw_Leave_ToDate)
 				begin
-					print('請假只有1天:起始日期=結束日期:')
+					print(N'請假只有1天:起始日期=結束日期:')
 					--===========================	
 					--[2-1]:是否[缺勤]:		   		   
 					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
@@ -495,9 +496,25 @@ BEGIN
 				end
 				else
 				begin
-					print '請假請超過2天(含):起始日期!=結束日期:'
+					print N'請假請超過2天(含):起始日期!=結束日期:'
 					--===========================	
-					--[2-3]:是否[缺勤]:		   		   
+					--[2-3]:是否[缺勤]:	
+					if((CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_FromDate) and @Btw_Leave_FromTime='PM')
+					begin
+					    --如果今天是假期的第1天 & 第1天從PM開始請假:
+						set @Total_Leave_Hour=4;	
+					end
+					else if((CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_ToDate) and @Btw_Leave_ToTime='AM')
+					begin
+					    --如果今天是假期的最後1天  & 最後1天只請假到AM:
+						set @Total_Leave_Hour=4;		
+					end
+					else
+					begin
+					    --如果今天是假期的位於[請假區間]中間的日期:
+						set @Total_Leave_Hour=8;	
+					end
+					--===
 					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
