@@ -176,7 +176,9 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="SQL_Agent_Src_Code\Gen_Office_Attn_SignBack_By_Endra_Original_Version.txt" />
     <Content Include="StoreProcedure_Src_Code\SP_Gen_Office_Attn_SignBack.txt" />
+    <Content Include="StoreProcedure_Src_Code\[141_DB_Crack_Debug]_SP_Gen_Office_Attn_SignBack.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
