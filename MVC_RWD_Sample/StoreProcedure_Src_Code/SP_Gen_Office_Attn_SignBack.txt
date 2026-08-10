@@ -57,17 +57,17 @@ DECLARE @D TABLE
 )
 
 /*
-QOO_DEBUG:*/
+QOO_DEBUG:
 WHILE @ST <= @DAYS
 BEGIN
 	INSERT INTO @D VALUES (@ST)			
 	SET @ST = @ST + 1
 END
-
+*/
 --===
---INSERT INTO @D VALUES ('21')
---INSERT INTO @D VALUES ('22')
---INSERT INTO @D VALUES ('23')
+INSERT INTO @D VALUES ('14')
+INSERT INTO @D VALUES ('15')
+INSERT INTO @D VALUES ('16')
 --INSERT INTO @D VALUES ('25')
 --select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
@@ -506,12 +506,12 @@ BEGIN
 					end
 					else if((CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)=@Btw_Leave_ToDate) and @Btw_Leave_ToTime='AM')
 					begin
-					    --如果今天是假期的最後1天  & 最後1天只請假到AM:
+					    --如果今天是假期的最後1天 & 最後1天只請假到AM:
 						set @Total_Leave_Hour=4;		
 					end
 					else
 					begin
-					    --如果今天是假期的位於[請假區間]中間的日期:
+					    --如果[今天是假期的位於[請假區間]中間的日期]、[假期的第1天 & 第1天從AM開始請假]、[假期的最後1天  & 最後1天只請假到PM]:
 						set @Total_Leave_Hour=8;	
 					end
 					--===
