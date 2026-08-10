@@ -56,18 +56,16 @@ DECLARE @D TABLE
     VAL INT
 )
 
-/*
-QOO_DEBUG:
+--===
 WHILE @ST <= @DAYS
 BEGIN
 	INSERT INTO @D VALUES (@ST)			
 	SET @ST = @ST + 1
 END
-*/
 --===
-INSERT INTO @D VALUES ('14')
-INSERT INTO @D VALUES ('15')
-INSERT INTO @D VALUES ('16')
+--INSERT INTO @D VALUES ('14')
+--INSERT INTO @D VALUES ('15')
+--INSERT INTO @D VALUES ('16')
 --INSERT INTO @D VALUES ('25')
 --select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
