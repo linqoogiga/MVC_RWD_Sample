@@ -1,6 +1,6 @@
 ﻿use [BLSOmnibackend]
 GO
---#1-1_[141=UAT_DB]_Crack版_SQL_Agent_[Gen_Office_Attn_SignBack]_執行指令_原始碼.sql
+--[240_正式機_完整版]_SQL_Agent_[Gen_Office_Attn_SignBack]_執行指令-> exec [SP_Gen_Office_Attn_SignBack] 原始碼:
 --=======================================================
 SET ANSI_NULLS ON
 GO
@@ -15,9 +15,9 @@ BEGIN
 DECLARE @STD DATE
 DECLARE @END DATE
 DECLARE @Period NVARCHAR(30)
-SET @STD = DATEADD(mm,-1,'2026-07-31 03:00:00') 
+--SET @STD = DATEADD(mm,-1,'2026-07-31 03:00:00') 
+SET @STD = DATEADD(mm,0,GETDATE()) 
 PRINT @STD
---SET @STD = DATEADD(mm,0,GETDATE()) 
 SET @Period =  CONCAT(FORMAT(YEAR(@STD),'0000'),'-',FORMAT(MONTH(@STD),'00'))
 PRINT  CONCAT('@STD=', @STD)
 PRINT CONCAT('@Period=', @Period)
@@ -89,8 +89,7 @@ FROM
 	  FROM blspostwn.dbo.tb_za40(NOLOCK) 
      WHERE za40_slyn='Y' 
        AND za40_sosk='1'
-       AND( --QOODEBUG==>za40_usid LIKE '2298%' or 
-	   za40_usid='TEST01')
+       AND (za40_usid LIKE '2298%' or za40_usid='TEST01') 
 	   --AND za40_dpcd<>'205' --倉務部 20250923 Michelle 加入倉庫
 	   --AND za40_usid NOT IN ('2298311123','2298310051','2298311090') --林謀嘉 / 張嘉珍 /Tammy Yu   
 	   --AND za40_usid NOT IN ('2298311123','2298311090') --林謀嘉 / Tammy Yu   
