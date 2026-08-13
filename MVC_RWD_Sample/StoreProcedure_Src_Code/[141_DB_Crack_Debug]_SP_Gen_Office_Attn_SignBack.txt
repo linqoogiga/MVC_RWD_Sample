@@ -57,6 +57,7 @@ DECLARE @D TABLE
 )
 
 --===
+/*QOODEBUG=>*/
 WHILE @ST <= @DAYS
 BEGIN
 	INSERT INTO @D VALUES (@ST)			
@@ -297,7 +298,7 @@ BEGIN
 		SELECT top 1 
 		@FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
 		@Leave_FromTime=FromTime, @Leave_ToTime=ToTime
-		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) 
+		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120))   order by FromDate , FromTime
 		--==============================================================
 		--今天是否有在某段_假別_的_時間區間_之內:
 		--Btw:Between:
@@ -337,12 +338,12 @@ BEGIN
 		        SELECT ISNULL(RelatedFlowCaseId, 0)
 		        FROM dbo.OfficeApprovedLeaveView(NOLOCK)
 		        WHERE UserNo =@ID
-		  );
+		  ) order by FromDate,FromTime ;
 		
 		--取得整段請假的起訖時間
 		SELECT top 1 @Btw_FlowCaseId=FlowCaseId, @Btw_LeaveCode=LeaveCode,@Btw_Leave_FromDate = FromDate,@Btw_Leave_ToDate=ToDate, 
 		@Btw_Leave_FromTime=FromTime, @Btw_Leave_ToTime=ToTime
-		FROM @Btw_LeaveData
+		FROM @Btw_LeaveData order by FromDate,FromTime
 		--===
 		PRINT '=============================='
 		PRINT CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)
