@@ -68,6 +68,7 @@ END
 --INSERT INTO @D VALUES ('15')
 --INSERT INTO @D VALUES ('16')
 --INSERT INTO @D VALUES ('25')
+--INSERT INTO @D VALUES ('27')
 --select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
 --SELECT sa01_clas,* FROM blspostwn.dbo.tb_sa01(NOLOCK)  
@@ -375,6 +376,7 @@ BEGIN
 		END
 		--==============================================================		
 		 declare @Total_Scheduled_Hours as DECIMAL(8,2) --請假時數 + 出勤時數[(請假+出勤)總時數]。
+		 set @Total_Scheduled_Hours=null
 		--==============================================================
 		--如果遲到，要請假區間->10:00~@Expect_Leave_EndTime->否則就算遲到:
 		    --規則:
