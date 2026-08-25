@@ -64,12 +64,13 @@ BEGIN
 	SET @ST = @ST + 1
 END
 --===
+--INSERT INTO @D VALUES ('0')
 --INSERT INTO @D VALUES ('10') --當月的1日為基準日Ex:2026-06-01，再加上10天-->2026-06-11-->計算2026-06-11的相關Info。
 --INSERT INTO @D VALUES ('14')
 --INSERT INTO @D VALUES ('15')
 --INSERT INTO @D VALUES ('16')
 --INSERT INTO @D VALUES ('25')
---INSERT INTO @D VALUES ('27')
+--INSERT INTO @D VALUES ('26')
 --select * from @D  --以2026-06-01~2026-06-30為例: 0~29
 --======================================================
 --SELECT sa01_clas,* FROM blspostwn.dbo.tb_sa01(NOLOCK)  
@@ -190,8 +191,9 @@ BEGIN
 			 WHERE EmpNo=@ID 
 			   AND WorkDate=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)     
 		--============		
-		-- 若原始上班時間早於 08:30、被強制拉到 08:30 才算 @WT，就記錄說明
-		IF (@IN IS NOT NULL AND @IN < @ClampIn)
+		-- 若原始上班時間早於 08:30、被強制拉到 08:30 才算 @WT，就記錄說明		
+		PRINT CONCAT('@IN=', @IN)		
+		IF (@IN<>'' AND @IN IS NOT NULL AND @IN < N'08:30')
 		begin
 			SET @SYS_Remark = N'因為上班時間，' + @IN +N'小於08:30，所以被強制改為08:30，計算WorkHours=@WT。'
 		end
