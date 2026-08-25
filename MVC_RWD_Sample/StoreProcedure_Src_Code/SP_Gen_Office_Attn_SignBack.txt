@@ -161,31 +161,57 @@ BEGIN
 			DECLARE @WT  DECIMAL(8,2)
 			DECLARE @HD  DECIMAL(8,2)
 			DECLARE @SU  DECIMAL(8,2)
+			--============
+			DECLARE @SYS_Remark NVARCHAR(200)
+			set @SYS_Remark=null		
+			--============
+			--20260817_By_John:因為HR[Selina,Jamie]規定:
+			--如果[上班打卡時間]小於(早於)08:30，則強制視為08:30為[上班打卡時間]，再與[下班打卡時間]、當天的[請假總時數]做計算，是否缺勤([出勤時數+請假時數]<9小時:缺勤)。
+			--[Clamp=夾子,限制到邊界,強行實施。In=上班打卡時間]->當天 08:30 (8小時*60分+30分=510分鐘)。
+			DECLARE @ClampIn DATETIME = DATEADD(MINUTE, 510, CAST(DATEADD(DAY,@DD,@STD) AS DATETIME)); 			
+			--============
 			SELECT @IN = ISNULL(CONVERT(NVARCHAR(20),MIN(DoorTime),108),''),
 			       @OUT= ISNULL(CONVERT(NVARCHAR(20),MAX(DoorTime),108),''),
-				   @WT = DATEDIFF(MINUTE,MIN(DoorTime),MAX(DoorTime))/60.00 ,
+				   --===
+				   --舊的Code:@WT = DATEDIFF(MINUTE,MIN(DoorTime),MAX(DoorTime))/60.00 ,
+				   @WT = CASE WHEN MAX(DoorTime) <= @ClampIn THEN 0 --如果當天最大(最晚)的[打卡時間]皆小於(早於)08:30, 就直接當天的[總出勤時數=0小時]。
+							   ELSE 
+							   DATEDIFF(MINUTE,CASE WHEN MIN(DoorTime) < @ClampIn THEN @ClampIn  --如果[上班打卡時間]小於08:30，則強制視為08:30為[上班打卡時間]。
+														   ELSE MIN(DoorTime) END
+														   ,MAX(DoorTime)) / 60.00 
+							   END,
+				   --===
 				   @HD = (SELECT da01_type FROM blspostwn.dbo.rp_da01(NOLOCK) WHERE da01_date=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)),
 				   @SU = (SELECT COUNT(*) FROM dbo.AttnRemark(NOLOCK) WHERE WorkDate>=@WD AND EmpNo=@ID)
 			  FROM BLSOmnibackend.dbo.AttnLog(NOLOCK) 
 			 WHERE EmpNo=@ID 
 			   AND WorkDate=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)     
+		--============		
+		-- 若原始上班時間早於 08:30、被強制拉到 08:30 才算 @WT，就記錄說明		
+		PRINT CONCAT('@IN=', @IN)		
+		IF (@IN<>'' AND @IN IS NOT NULL AND @IN < N'08:30')
+		begin
+			SET @SYS_Remark = N'因為上班時間，' + @IN +N'小於08:30，所以被強制改為08:30，計算WorkHours=@WT。'
+		end
+		--============
 		--IF @HD = '01' 
 		--BEGIN									
 			--請假
-			DECLARE @RK NVARCHAR(200)   		
-			SET @RK = ''	
-			SELECT @RK=ISNULL(BB.myLeave,'') FROM (
-			SELECT (	
-			SELECT (AA.LeaveCode +'-'+ CASE WHEN AA.FromTime=AA.ToTime THEN AA.FromTime ELSE AA.FromTime+'/'+AA.ToTime END+' ')
-			FROM (
-			SELECT LeaveCode  AS LeaveCode,
-			       FromDate,ToDate,
-				   FromTime,ToTime
-			  FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID
-			  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate			
-			  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
-			  AND FlowCaseId NOT IN (SELECT ISNULL(RelatedFlowCaseId,0) FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID)			  
-			) AA ORDER BY FromTime FOR XML PATH('') ) AS myLeave
+			DECLARE @RK NVARCHAR(200)
+			SET @RK = ''
+			SELECT @RK = ISNULL(BB.myLeave,'') FROM (
+			    SELECT STUFF((
+			        SELECT (','+ AA.LeaveCode +'-'+ CASE WHEN AA.FromTime=AA.ToTime THEN AA.FromTime ELSE AA.FromTime+'/'+AA.ToTime END)
+			        FROM (
+			            SELECT LeaveCode  AS LeaveCode,
+			                   FromDate, ToDate,
+			                   FromTime, ToTime
+			            FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID
+			            AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate
+			            AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
+			            AND FlowCaseId NOT IN (SELECT ISNULL(RelatedFlowCaseId,0) FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID)
+			        ) AA ORDER BY FromTime FOR XML PATH('')
+			    ), 1, 1, '') AS myLeave
 			) BB
 			--主任排班
 			DECLARE @SF NVARCHAR(100)
@@ -297,7 +323,7 @@ BEGIN
 		SELECT top 1 
 		@FlowCaseId=FlowCaseId, @LeaveCode=LeaveCode,@Leave_FromDate = FromDate,@Leave_ToDate=ToDate, 
 		@Leave_FromTime=FromTime, @Leave_ToTime=ToTime
-		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120))    order by FromDate , FromTime
+		from dbo.fn_Get_Leave_Info(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120))   order by FromDate , FromTime
 		--==============================================================
 		--今天是否有在某段_假別_的_時間區間_之內:
 		--Btw:Between:
@@ -337,12 +363,12 @@ BEGIN
 		        SELECT ISNULL(RelatedFlowCaseId, 0)
 		        FROM dbo.OfficeApprovedLeaveView(NOLOCK)
 		        WHERE UserNo =@ID
-		  )  order by FromDate,FromTime ;
+		  ) order by FromDate,FromTime ;
 		
 		--取得整段請假的起訖時間
 		SELECT top 1 @Btw_FlowCaseId=FlowCaseId, @Btw_LeaveCode=LeaveCode,@Btw_Leave_FromDate = FromDate,@Btw_Leave_ToDate=ToDate, 
 		@Btw_Leave_FromTime=FromTime, @Btw_Leave_ToTime=ToTime
-		FROM @Btw_LeaveData  order by FromDate,FromTime 
+		FROM @Btw_LeaveData order by FromDate,FromTime
 		--===
 		PRINT '=============================='
 		PRINT CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)
@@ -371,6 +397,9 @@ BEGIN
 		BEGIN
 		    SET @tmp_is_hour_unit_leave = 1;
 		END
+		--==============================================================		
+		 declare @Total_Scheduled_Hours as DECIMAL(8,2) --請假時數 + 出勤時數[(請假+出勤)總時數]。
+		 set @Total_Scheduled_Hours=null
 		--==============================================================
 		--如果遲到，要請假區間->10:00~@Expect_Leave_EndTime->否則就算遲到:
 		    --規則:
@@ -403,6 +432,12 @@ BEGIN
 		    --假日、請1天或請多天_每天都是請完整的一整天，就不用做任何[遲到],[缺勤]的判定。
 			set @Is_Late=0
 			set @Is_Absent=0
+			--===
+			if ((CHARINDEX(N'AM/PM', @RK) > 0)  or (CHARINDEX(N'09:00/18:00 ', @RK) > 0))
+			begin
+				--如果當天有請假&是請全天假，就一律@Total_Scheduled_Hours=[出勤時數+請假時數]=8小時。但是[例假日]:就null。
+				set @Total_Scheduled_Hours=8
+			end
 		END
 		ELSE		--===========================		
 		BEGIN
@@ -411,8 +446,9 @@ BEGIN
 				--[1]假別使用[小時]為單位:
 				print N'假別使用[小時]為單位:'
 				--===========================	
-				--[1-1]:是否[缺勤]:		   		   
-				if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+				--[1-1]:是否[缺勤]:	
+				set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+				if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 				begin
 				   set @Is_Absent=0
 				end
@@ -448,8 +484,9 @@ BEGIN
 				begin
 					print(N'請假只有1天:起始日期=結束日期:')
 					--===========================	
-					--[2-1]:是否[缺勤]:		   		   
-					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+					--[2-1]:是否[缺勤]:	
+					set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+					if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
 					end
@@ -513,7 +550,8 @@ BEGIN
 						set @Total_Leave_Hour=8;	
 					end
 					--===
-					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+					set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+					if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
 					end
@@ -613,6 +651,7 @@ BEGIN
 		    LastModified,
 		    LastModifiedBy,
 		    StatusId,
+			Total_Scheduled_Hours,
 			Is_Late, 
 			Is_Absent 
 		)
@@ -625,12 +664,22 @@ BEGIN
 		    N'',       -- Reason - nvarchar(30)
 		    --N'',       -- Remark - nvarchar(30)
 			ISNULL(@RK,''),
-		    CASE WHEN @WT>9.5 THEN 'OT' ELSE '' END,       -- SysRemark - nvarchar(30)
+			--======
+		    --舊Code:CASE WHEN @WT>9.5 THEN 'OT' ELSE '' END,       -- SysRemark - nvarchar(30)
+			--===
+			CASE 
+				WHEN @WT>9.5 AND @SYS_Remark IS NOT NULL THEN N'OT;'+@SYS_Remark
+				WHEN @WT>9.5												  THEN N'OT'
+				WHEN @SYS_Remark IS NOT NULL						  THEN @SYS_Remark
+			ELSE ''
+			END,   -- SysRemark
+			--======
 		    GETDATE(), -- Created - datetime
 		    N'SYSTEM',       -- Creator - nvarchar(20)
 		    GETDATE(), -- LastModified - datetime
 		    N'SYSTEM',       -- LastModifiedBy - nvarchar(20)
 		    1,          -- StatusId - int
+			@Total_Scheduled_Hours,
 			@Is_Late,
 			@Is_Absent
 		)
