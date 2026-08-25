@@ -64,6 +64,7 @@ BEGIN
 	SET @ST = @ST + 1
 END
 --===
+--INSERT INTO @D VALUES ('10') --當月的1日為基準日Ex:2026-06-01，再加上10天-->2026-06-11-->計算2026-06-11的相關Info。
 --INSERT INTO @D VALUES ('14')
 --INSERT INTO @D VALUES ('15')
 --INSERT INTO @D VALUES ('16')
@@ -163,9 +164,23 @@ BEGIN
 			DECLARE @WT  DECIMAL(8,2)
 			DECLARE @HD  DECIMAL(8,2)
 			DECLARE @SU  DECIMAL(8,2)
+			--============
+			--20260817_By_John:因為HR[Selina,Jamie]規定:
+			--如果[上班打卡時間]小於(早於)08:30，則強制視為08:30為[上班打卡時間]，再與[下班打卡時間]、當天的[請假總時數]做計算，是否缺勤([出勤時數+請假時數]<9小時:缺勤)。
+			--[Clamp=夾子,限制到邊界,強行實施。In=上班打卡時間]->當天 08:30 (8小時*60分+30分=510分鐘)。
+			DECLARE @ClampIn DATETIME = DATEADD(MINUTE, 510, CAST(DATEADD(DAY,@DD,@STD) AS DATETIME)); 			
+			--============
 			SELECT @IN = ISNULL(CONVERT(NVARCHAR(20),MIN(DoorTime),108),''),
 			       @OUT= ISNULL(CONVERT(NVARCHAR(20),MAX(DoorTime),108),''),
-				   @WT = DATEDIFF(MINUTE,MIN(DoorTime),MAX(DoorTime))/60.00 ,
+				   --===
+				   --舊的Code:@WT = DATEDIFF(MINUTE,MIN(DoorTime),MAX(DoorTime))/60.00 ,
+				   @WT = CASE WHEN MAX(DoorTime) <= @ClampIn THEN 0 --如果當天最大(最晚)的[打卡時間]皆小於(早於)08:30, 就直接當天的[總出勤時數=0小時]。
+							   ELSE 
+							   DATEDIFF(MINUTE,CASE WHEN MIN(DoorTime) < @ClampIn THEN @ClampIn  --如果[上班打卡時間]小於08:30，則強制視為08:30為[上班打卡時間]。
+														   ELSE MIN(DoorTime) END
+														   ,MAX(DoorTime)) / 60.00 
+							   END,
+				   --===
 				   @HD = (SELECT da01_type FROM blspostwn.dbo.rp_da01(NOLOCK) WHERE da01_date=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)),
 				   @SU = (SELECT COUNT(*) FROM dbo.AttnRemark(NOLOCK) WHERE WorkDate>=@WD AND EmpNo=@ID)
 			  FROM BLSOmnibackend.dbo.AttnLog(NOLOCK) 
