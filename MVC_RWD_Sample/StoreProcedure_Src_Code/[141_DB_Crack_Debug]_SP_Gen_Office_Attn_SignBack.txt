@@ -165,6 +165,9 @@ BEGIN
 			DECLARE @HD  DECIMAL(8,2)
 			DECLARE @SU  DECIMAL(8,2)
 			--============
+			DECLARE @SYS_Remark NVARCHAR(200)
+			set @SYS_Remark=null		
+			--============
 			--20260817_By_John:因為HR[Selina,Jamie]規定:
 			--如果[上班打卡時間]小於(早於)08:30，則強制視為08:30為[上班打卡時間]，再與[下班打卡時間]、當天的[請假總時數]做計算，是否缺勤([出勤時數+請假時數]<9小時:缺勤)。
 			--[Clamp=夾子,限制到邊界,強行實施。In=上班打卡時間]->當天 08:30 (8小時*60分+30分=510分鐘)。
@@ -186,6 +189,13 @@ BEGIN
 			  FROM BLSOmnibackend.dbo.AttnLog(NOLOCK) 
 			 WHERE EmpNo=@ID 
 			   AND WorkDate=CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),112)     
+		--============		
+		-- 若原始上班時間早於 08:30、被強制拉到 08:30 才算 @WT，就記錄說明
+		IF (@IN IS NOT NULL AND @IN < @ClampIn)
+		begin
+			SET @SYS_Remark = N'因為上班時間，' + @IN +N'小於08:30，所以被強制改為08:30，計算WorkHours=@WT。'
+		end
+		--============
 		--IF @HD = '01' 
 		--BEGIN									
 			--請假
@@ -656,7 +666,16 @@ BEGIN
 		    N'',       -- Reason - nvarchar(30)
 		    --N'',       -- Remark - nvarchar(30)
 			ISNULL(@RK,''),
-		    CASE WHEN @WT>9.5 THEN 'OT' ELSE '' END,       -- SysRemark - nvarchar(30)
+			--======
+		    --舊Code:CASE WHEN @WT>9.5 THEN 'OT' ELSE '' END,       -- SysRemark - nvarchar(30)
+			--===
+			CASE 
+				WHEN @WT>9.5 AND @SYS_Remark IS NOT NULL THEN N'OT;'+@SYS_Remark
+				WHEN @WT>9.5												  THEN N'OT'
+				WHEN @SYS_Remark IS NOT NULL						  THEN @SYS_Remark
+			ELSE ''
+			END,   -- SysRemark
+			--======
 		    GETDATE(), -- Created - datetime
 		    N'SYSTEM',       -- Creator - nvarchar(20)
 		    GETDATE(), -- LastModified - datetime
