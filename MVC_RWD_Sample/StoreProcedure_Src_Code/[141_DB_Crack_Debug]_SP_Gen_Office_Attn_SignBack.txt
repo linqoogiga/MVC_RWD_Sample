@@ -173,20 +173,21 @@ BEGIN
 		--IF @HD = '01' 
 		--BEGIN									
 			--請假
-			DECLARE @RK NVARCHAR(200)   		
-			SET @RK = ''	
-			SELECT @RK=ISNULL(BB.myLeave,'') FROM (
-			SELECT (	
-			SELECT (AA.LeaveCode +'-'+ CASE WHEN AA.FromTime=AA.ToTime THEN AA.FromTime ELSE AA.FromTime+'/'+AA.ToTime END+' ')
-			FROM (
-			SELECT LeaveCode  AS LeaveCode,
-			       FromDate,ToDate,
-				   FromTime,ToTime
-			  FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID
-			  AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate			
-			  AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
-			  AND FlowCaseId NOT IN (SELECT ISNULL(RelatedFlowCaseId,0) FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID)			  
-			) AA ORDER BY FromTime FOR XML PATH('') ) AS myLeave
+			DECLARE @RK NVARCHAR(200)
+			SET @RK = ''
+			SELECT @RK = ISNULL(BB.myLeave,'') FROM (
+			    SELECT STUFF((
+			        SELECT (','+ AA.LeaveCode +'-'+ CASE WHEN AA.FromTime=AA.ToTime THEN AA.FromTime ELSE AA.FromTime+'/'+AA.ToTime END)
+			        FROM (
+			            SELECT LeaveCode  AS LeaveCode,
+			                   FromDate, ToDate,
+			                   FromTime, ToTime
+			            FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID
+			            AND CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120) BETWEEN FromDate AND ToDate
+			            AND (RelatedFlowCaseId IS NULL OR RelatedFlowCaseId = 0)
+			            AND FlowCaseId NOT IN (SELECT ISNULL(RelatedFlowCaseId,0) FROM dbo.OfficeApprovedLeaveView(NOLOCK) WHERE UserNo=@ID)
+			        ) AA ORDER BY FromTime FOR XML PATH('')
+			    ), 1, 1, '') AS myLeave
 			) BB
 			--主任排班
 			DECLARE @SF NVARCHAR(100)
@@ -372,6 +373,8 @@ BEGIN
 		BEGIN
 		    SET @tmp_is_hour_unit_leave = 1;
 		END
+		--==============================================================		
+		 declare @Total_Scheduled_Hours as DECIMAL(8,2) --請假時數 + 出勤時數[(請假+出勤)總時數]。
 		--==============================================================
 		--如果遲到，要請假區間->10:00~@Expect_Leave_EndTime->否則就算遲到:
 		    --規則:
@@ -412,8 +415,9 @@ BEGIN
 				--[1]假別使用[小時]為單位:
 				print N'假別使用[小時]為單位:'
 				--===========================	
-				--[1-1]:是否[缺勤]:		   		   
-				if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+				--[1-1]:是否[缺勤]:	
+				set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+				if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 				begin
 				   set @Is_Absent=0
 				end
@@ -449,8 +453,9 @@ BEGIN
 				begin
 					print(N'請假只有1天:起始日期=結束日期:')
 					--===========================	
-					--[2-1]:是否[缺勤]:		   		   
-					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+					--[2-1]:是否[缺勤]:	
+					set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+					if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
 					end
@@ -514,7 +519,8 @@ BEGIN
 						set @Total_Leave_Hour=8;	
 					end
 					--===
-					if((@WT+@Total_Leave_Hour)>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
+					set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+					if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
 					end
@@ -614,6 +620,7 @@ BEGIN
 		    LastModified,
 		    LastModifiedBy,
 		    StatusId,
+			Total_Scheduled_Hours,
 			Is_Late, 
 			Is_Absent 
 		)
@@ -632,6 +639,7 @@ BEGIN
 		    GETDATE(), -- LastModified - datetime
 		    N'SYSTEM',       -- LastModifiedBy - nvarchar(20)
 		    1,          -- StatusId - int
+			@Total_Scheduled_Hours,
 			@Is_Late,
 			@Is_Absent
 		)
