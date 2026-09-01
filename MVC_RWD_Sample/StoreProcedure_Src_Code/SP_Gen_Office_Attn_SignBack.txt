@@ -162,6 +162,11 @@ BEGIN
 			DECLARE @HD  DECIMAL(8,2)
 			DECLARE @SU  DECIMAL(8,2)
 			--============
+			DECLARE @Minus_Offset_Hour  DECIMAL(8,2)
+			set @Minus_Offset_Hour=0;
+			--20260901_By_John:因為如果只請[上半天:AM~AM]或[下半天:PM~PM]，需直接加上午休1.5小時，
+			--但是可能[上班打卡時間]或[下班打卡時間]位於12:30~14:00之間，所以當算總上班時數，要[扣掉]的[差額總時數]。
+			--============
 			DECLARE @SYS_Remark NVARCHAR(200)
 			set @SYS_Remark=null		
 			--============
@@ -486,6 +491,31 @@ BEGIN
 					--===========================	
 					--[2-1]:是否[缺勤]:	
 					set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour
+					--=========
+					--如果只請上午半天_或_下午半天 & 以[天]為請假單位 & [AM~AM Or PM~PM]:也要再加上中午午休1.5小時。
+					if((@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='AM')  or (@Btw_Leave_FromTime='PM' and @Btw_Leave_ToTime='PM'))
+					begin					    																
+						if(@IN>='12:30' and @IN<='14:00')
+						begin 
+							set @Minus_Offset_Hour=DATEDIFF(MINUTE, @IN, '14:00') / 60.00
+						end
+						else if(@OUT>='12:30' and @OUT<='14:00')
+						begin 
+							set @Minus_Offset_Hour=DATEDIFF(MINUTE, '12:30',@OUT) / 60.00
+						end
+						else if(@IN<='12:30' and @OUT>='14:00')
+						begin 
+							set @Minus_Offset_Hour=1.5;
+						end
+						--===
+						set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour + 1.5 - @Minus_Offset_Hour;	
+						--===
+						PRINT CONCAT('@WT=', @WT)		
+						PRINT CONCAT('@Total_Leave_Hour=', @Total_Leave_Hour)		
+						PRINT CONCAT('@Minus_Offset_Hour=', @Minus_Offset_Hour)		
+						PRINT CONCAT('@Total_Scheduled_Hours=', @Total_Scheduled_Hours)		
+					end
+					--=========
 					if(@Total_Scheduled_Hours>=9) --(如果當天上班總時數+請假的總時數)>=9小時，就不算[缺勤]，否則就是[缺勤]。
 					begin
 					   set @Is_Absent=0
