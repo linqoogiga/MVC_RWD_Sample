@@ -440,8 +440,8 @@ BEGIN
 			--===
 			if ((CHARINDEX(N'AM/PM', @RK) > 0)  or (CHARINDEX(N'09:00/18:00', @RK) > 0))
 			begin
-				--如果當天有請假&是請全天假，就一律@Total_Scheduled_Hours=[出勤時數+請假時數]=8小時。但是[例假日]:就null。
-				set @Total_Scheduled_Hours=8
+				--如果當天有請假&是請全天假，就一律@Total_Scheduled_Hours=[出勤時數+請假時數]=9小時。但是[例假日]:就null。
+				set @Total_Scheduled_Hours=9
 			end
 		END
 		ELSE		--===========================		
