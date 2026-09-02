@@ -499,17 +499,27 @@ BEGIN
 					--如果只請上午半天_或_下午半天 & 以[天]為請假單位 & [AM~AM Or PM~PM]:也要再加上中午午休1.5小時。
 					if((@Btw_Leave_FromTime='AM' and @Btw_Leave_ToTime='AM')  or (@Btw_Leave_FromTime='PM' and @Btw_Leave_ToTime='PM'))
 					begin					    																
-						if(@IN>='12:30' and @IN<='14:00')
+						if(@IN>='12:30' and @IN<='14:00' and @OUT>'14:00')
 						begin 
+							PRINT 'B1'
 							set @Minus_Offset_Hour=DATEDIFF(MINUTE, @IN, '14:00') / 60.00
 						end
-						else if(@OUT>='12:30' and @OUT<='14:00')
+						else if(@OUT>='12:30' and @OUT<='14:00' and @IN<'12:30')
 						begin 
+							PRINT 'B2'
 							set @Minus_Offset_Hour=DATEDIFF(MINUTE, '12:30',@OUT) / 60.00
 						end
 						else if(@IN<='12:30' and @OUT>='14:00')
 						begin 
+							PRINT 'B3'
 							set @Minus_Offset_Hour=1.5;
+						end
+						else if(@IN>='12:30' and @OUT<='14:00')
+						begin 
+							--如果[上班時間]~[下班時間]->位於午休12:30~14:00之間:
+							PRINT 'B4'					
+							SET @SYS_Remark = N'因為[上班時間]' + @IN +N'~[下班時間]'+@OUT+N'，位於午休12:30~14:00之間，所以WorkHours=@WT，不列入計算。';
+							set @Minus_Offset_Hour=DATEDIFF(MINUTE, @IN,@OUT) / 60.00									
 						end
 						--===
 						set @Total_Scheduled_Hours = @WT+@Total_Leave_Hour + 1.5 - @Minus_Offset_Hour;	
