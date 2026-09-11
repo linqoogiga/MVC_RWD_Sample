@@ -438,7 +438,7 @@ BEGIN
 		   SELECT @Total_Leave_Hour=isnull(dbo.fn_Get_Leave_TotalHour(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) ,0) --2026-06-01		   
 		   PRINT CONCAT('@Total_Leave_Hour=', @Total_Leave_Hour)	
 		 --=====================================
-		 --補打卡，取代[原本上班打卡時間]、[原本下班打卡時間]。
+		 --20260911_By_John_From_HR[Selina.Jamie]:補打卡，取代[原本上班打卡時間]、[原本下班打卡時間]。
 		   print CONCAT('@ClockIn=', @ClockIn)  --09:00/18:00
 		   --select CHARINDEX('/', @ClockIn)
 		--==============================
@@ -463,17 +463,17 @@ BEGIN
 		--============
 		if((@complement_clock_in<>'' and @complement_clock_in<@IN) or (@complement_clock_out<>'' and @complement_clock_out>@OUT))
 		begin
-		if(@complement_clock_in<@IN)
+		if(@complement_clock_in<>'' and @complement_clock_in<@IN)
 		begin
 			set @IN=@complement_clock_in;
 		end
 		--===
-		if(@complement_clock_out>@OUT)
+		if(@complement_clock_out<>'' and @complement_clock_out>@OUT)
 		begin
 			set @OUT=@complement_clock_out;
 		end
 		--===
-		set @WT =    DATEDIFF(MINUTE,@IN,@OUT) / 60.00;
+		set @WT =    DATEDIFF(MINUTE,@IN,@OUT) / 60.00; --因為上班時間、下班時間，已變更，所以要重新計算@WT總工時。
 		end
 		--==============================================================		
 		IF ((CHARINDEX(N'AM/PM', @RK) > 0) or (CHARINDEX(N'假日', @RK) > 0) or (CHARINDEX(N'09:00/18:00', @RK) > 0))
