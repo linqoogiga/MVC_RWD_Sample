@@ -11,11 +11,11 @@ Alter FUNCTION [dbo].[fn_Get_Leave_TotalHour]
     @UserNo NVARCHAR(100),
     @FromDate DATETIME
 )
-RETURNS INT
+RETURNS DECIMAL(18,1)
 AS
 BEGIN
 
-    DECLARE @Sum_TotalHours INT;
+    DECLARE @Sum_TotalHours DECIMAL(18,1);
 
     SELECT @Sum_TotalHours = ISNULL(SUM(TotalHours), 0) from
 	(

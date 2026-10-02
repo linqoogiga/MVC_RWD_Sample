@@ -427,7 +427,7 @@ BEGIN
 		   PRINT CONCAT('@Leave_FromTime=', @Leave_FromTime)
 		   PRINT CONCAT('@Leave_ToTime=', @Leave_ToTime)		 
         --=====================================
-		   declare @Total_Leave_Hour as int
+		   declare @Total_Leave_Hour as DECIMAL(18,1) --User可能會請1.5小時的假(最小單位0.5小時=30分鐘)。
 		   set @Total_Leave_Hour=0
 		   SELECT @Total_Leave_Hour=isnull(dbo.fn_Get_Leave_TotalHour(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) ,0) --2026-06-01		   
 		   PRINT CONCAT('@Total_Leave_Hour=', @Total_Leave_Hour)	

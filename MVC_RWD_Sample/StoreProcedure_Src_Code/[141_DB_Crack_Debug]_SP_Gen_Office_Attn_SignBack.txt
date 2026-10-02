@@ -67,6 +67,7 @@ END
 --===
 --INSERT INTO @D VALUES ('0')
 --INSERT INTO @D VALUES ('10') --當月的1日為基準日Ex:2026-06-01，再加上10天-->2026-06-11-->計算2026-06-11的相關Info。
+--INSERT INTO @D VALUES ('11') 
 --INSERT INTO @D VALUES ('4')
 --INSERT INTO @D VALUES ('7')
 --INSERT INTO @D VALUES ('15')
@@ -433,7 +434,7 @@ BEGIN
 		   PRINT CONCAT('@Leave_FromTime=', @Leave_FromTime)
 		   PRINT CONCAT('@Leave_ToTime=', @Leave_ToTime)		 
         --=====================================
-		   declare @Total_Leave_Hour as int
+		   declare @Total_Leave_Hour as DECIMAL(18,1) --User可能會請1.5小時的假(最小單位0.5小時=30分鐘)。
 		   set @Total_Leave_Hour=0
 		   SELECT @Total_Leave_Hour=isnull(dbo.fn_Get_Leave_TotalHour(@ID,CONVERT(NVARCHAR(10),DATEADD(DAY,@DD,@STD),120)) ,0) --2026-06-01		   
 		   PRINT CONCAT('@Total_Leave_Hour=', @Total_Leave_Hour)	
