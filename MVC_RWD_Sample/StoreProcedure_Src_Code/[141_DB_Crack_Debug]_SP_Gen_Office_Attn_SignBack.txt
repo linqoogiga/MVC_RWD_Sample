@@ -460,16 +460,16 @@ BEGIN
 		   end
 		--============
 		PRINT CONCAT('@complement_clock_in=', @complement_clock_in) 
-		PRINT CONCAT('@@complement_clock_out=', @complement_clock_out) 
+		PRINT CONCAT('@complement_clock_out=', @complement_clock_out) 
 		--============
-		if((@complement_clock_in<>'' and @complement_clock_in<@IN) or (@complement_clock_out<>'' and @complement_clock_out>@OUT))
+		if((@complement_clock_in<>'' and (@complement_clock_in<@IN or @IN='')) or (@complement_clock_out<>'' and (@complement_clock_out>@OUT or @OUT='')))
 		begin
-		if(@complement_clock_in<>'' and @complement_clock_in<@IN)
+		if(@complement_clock_in<>'' and (@complement_clock_in<@IN or @IN=''))
 		begin
 			set @IN=@complement_clock_in;
 		end
 		--===
-		if(@complement_clock_out<>'' and @complement_clock_out>@OUT)
+		if(@complement_clock_out<>'' and (@complement_clock_out>@OUT or @OUT=''))
 		begin
 			set @OUT=@complement_clock_out;
 		end
